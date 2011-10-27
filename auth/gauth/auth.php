@@ -1,14 +1,27 @@
 <?php
 /**
- * @author  Piers Harding
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package auth/gauth
- * @version 1.0
- * 
- * Authentication Plugin: Google OpenId based SSO Authentication
- *
- * 2011-10  Created
-**/
+* Copyright (C) 2011 Catalyst IT Ltd
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+* @package    auth/gauth
+* @author     Catalyst IT Ltd
+* @author     Piers Harding
+* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+* @copyright  (C) 2011 Catalyst IT Ltd http://catalyst.net.nz
+*
+*/
 
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
