@@ -145,6 +145,10 @@ class local_oauth_fusion extends local_oauth {
             }
             $lines[]= "INSERT INTO ".$table_id." (".implode(', ', $fields).") VALUES (".implode(", ", $values).") ";
         }
+        // bail if there are no lines to add
+        if (empty($lines)) {
+            return null;
+        }
         $sql = " ".implode("; ", $lines)."; ";
         $response = $this->postRequest($this->api, array('sql' => $sql));
 

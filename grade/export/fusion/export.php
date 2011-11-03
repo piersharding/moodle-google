@@ -46,7 +46,7 @@ if (groups_get_course_groupmode($COURSE) == SEPARATEGROUPS and !has_capability('
     }
 }
 
-// check OAuth 
+// check OAuth
 $oauth = new local_oauth_fusion();
 // parameters to preserve
 $preserve = array(
@@ -82,5 +82,3 @@ catch (local_oauth_exception $e) {
 $export = new grade_export_fusion($course, $groupid, $itemids, $export_feedback, $updatedgradesonly, $displaytype, $decimalpoints, $separator, $tablename);
 $export->set_table($tablename);
 $export->export_grades($oauth);
-
-

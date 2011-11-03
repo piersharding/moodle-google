@@ -168,12 +168,14 @@ class local_oauth {
 
         // search for things in the SESSION first
         if (isset($SESSION->local_oauth[$name])) {
-            $this->site = unserialize($SESSION->local_oauth[$name]['site']);
-            $this->request_token = unserialize($SESSION->local_oauth[$name]['request_token']);
-            $this->access_token = unserialize($SESSION->local_oauth[$name]['access_token']);
-            $this->consumer = unserialize($SESSION->local_oauth[$name]['consumer']);
-            $this->preserve = unserialize($SESSION->local_oauth[$name]['preserve']);
-            return;
+            if (isset($SESSION->local_oauth[$name])) {
+                $this->site = unserialize($SESSION->local_oauth[$name]['site']);
+                $this->request_token = unserialize($SESSION->local_oauth[$name]['request_token']);
+                $this->access_token = unserialize($SESSION->local_oauth[$name]['access_token']);
+                $this->consumer = unserialize($SESSION->local_oauth[$name]['consumer']);
+                $this->preserve = unserialize($SESSION->local_oauth[$name]['preserve']);
+                return;
+            }
         }
 
         if (!$site = local_oauth_registration::get_site_by_name($name)) {

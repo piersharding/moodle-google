@@ -186,5 +186,3 @@ class grade_export_fusion extends grade_export {
     }
 
 }
-
-
