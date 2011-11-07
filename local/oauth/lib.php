@@ -72,8 +72,6 @@ class local_oauth_registration {
      */
     public function add_site($site) {
         global $DB;
-//        $site->timeregistered = time();
-//        $site->timemodified = time();
         $site->id = $DB->insert_record('oauth_site_directory', $site);
         return $site;
     }
@@ -200,11 +198,8 @@ class local_oauth {
 
         // search for things in the SESSION first
         $DB->delete_records('oauth_access_token', array('siteid' => $this->site->id, 'userid' => $USER->id));
-        //$this->site = NULL;
         $this->request_token = NULL;
         $this->access_token = NULL;
-        //$this->consumer = NULL;
-        //$this->preserve = NULL;
         if (isset($SESSION->local_oauth)) {
             if (isset($SESSION->local_oauth[$name])) {
                 unset($SESSION->local_oauth[$name]);
@@ -234,7 +229,6 @@ class local_oauth {
             $token = new object();
             $token->userid = $USER->id;
             $token->siteid = $this->site->id;
-//           $token->access_token = $SESSION->local_oauth[$name]['access_token'];
             $DB->insert_record('oauth_access_token', $token);
         }
     }
@@ -273,7 +267,6 @@ class local_oauth {
     public function add_to_log($msg, $url='') {
         global $COURSE, $CFG;
 
-        //$rurl = setup_get_remote_url();
         if ($COURSE) {
             add_to_log($COURSE->id, 'OAuth', 'Authentication', $url, $msg);
         }
@@ -300,7 +293,6 @@ class local_oauth {
             if (empty($this->request_token)) {
                 // obtain a request token
                 $this->add_to_log('get request token');
-                //$this->consumer = new local_oauth_Consumer($this->site->consumer_key, $this->site->consumer_secret);
                 $this->request_token = $this->consumer->getRequestToken($this->site->request_token_url, $oauth_params);
                 $this->store();
 

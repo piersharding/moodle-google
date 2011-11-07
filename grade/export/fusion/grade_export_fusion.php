@@ -75,7 +75,7 @@ class grade_export_fusion extends grade_export {
     }
 
     public function export_grades($oauth) {
-        global $CFG, $OUTPUT, $COURSE;
+        global $CFG, $OUTPUT;
 
         $export_tracking = $this->track_exports();
 
@@ -130,7 +130,7 @@ class grade_export_fusion extends grade_export {
         // output a basic page and do the popup and redirect
         $table_url = 'https://www.google.com/fusiontables/DataSource?dsrcid='.$table_id;
         $course_url = $CFG->wwwroot.'/course/view.php?id='.$this->course->id;
-        print_grade_page_head($COURSE->id, 'export', 'fusion', get_string('exportto', 'grades') . ' ' . get_string('modulename', 'gradeexport_fusion'));
+        print_grade_page_head($this->course->id, 'export', 'fusion', get_string('exportto', 'grades') . ' ' . get_string('modulename', 'gradeexport_fusion'));
         echo $OUTPUT->heading(get_string('popup', 'gradeexport_fusion'));
         ?>
             <script type="text/javascript">
