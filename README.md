@@ -19,3 +19,5 @@ blocks/gaccess - Block of links to Google Apps services for your domain.
 grade/export/fusion - Google Fusion tables export from grade book
 
 local/oauth - generic OAuth authentication module required for Fusion Tables integration
+
+repository/googlelinks - OAuth based repository plugin for Google Apps - provides URLs and Files
