@@ -150,11 +150,11 @@ class local_oauth_exception extends moodle_exception { };
 
 class local_oauth {
 
-    private $site;
-    private $request_token;
-    private $access_token;
-    private $consumer;
-    private $preserve;
+    protected $site;
+    protected $request_token;
+    protected $access_token;
+    protected $consumer;
+    protected $preserve;
 
     public function __construct($name) {
         global $CFG, $USER, $SESSION, $DB;
@@ -186,6 +186,17 @@ class local_oauth {
         }
         $this->store();
         return;
+    }
+
+    /**
+    * Is the user authorised
+    * @return boolean
+    */
+    public function is_authorised() {
+        if ($this->access_token) {
+            return true;
+        }
+        return false;
     }
 
     /**
