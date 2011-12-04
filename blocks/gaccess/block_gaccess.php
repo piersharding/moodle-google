@@ -80,12 +80,12 @@ class block_gaccess extends block_list {
         $this->content->icons = array();
         $this->content->footer = '';
 
-		// Test for domain settings 
-		if( !$domain = get_config('blocks/gaccess','domainname') ) {
-	    	$this->content->items = array(get_string('mustusegoogleauthenticaion','block_gaccess'));
-        	$this->content->icons = array();
-    		return $this->content;
-		}
+        // Test for domain settings
+        if( !$domain = get_config('blocks/gaccess','domainname') ) {
+            $this->content->items = array(get_string('mustusegoogleauthenticaion','block_gaccess'));
+            $this->content->icons = array();
+            return $this->content;
+        }
 
         // USE the icons from this page
         // https://www.google.com/a/cpanel/mroomsdev.com/Dashboard

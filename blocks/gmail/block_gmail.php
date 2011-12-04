@@ -68,7 +68,7 @@ defined('MOODLE_INTERNAL') or die();
 
 class block_gmail extends block_list {
 
- 	var $domain;
+    var $domain;
     var $oauthsecret;
     var $msgnumber;
 
@@ -93,10 +93,10 @@ class block_gmail extends block_list {
     function get_content() {
     global $SESSION, $CFG, $USER, $OUTPUT;
 
-    	// quick and simple way to prevent block from showing up on front page
-    	if (!isloggedin()) {
-    		$this->content = NULL;
-    		return $this->content;
+        // quick and simple way to prevent block from showing up on front page
+        if (!isloggedin()) {
+            $this->content = NULL;
+            return $this->content;
        }
 
         // quick and simple way to prevent block from showing up on users My Moodle if their email does not match the Google registered domain
@@ -106,30 +106,30 @@ class block_gmail extends block_list {
             return $this->content;
         }
 
-    	if ($this->content !== NULL) {
-        	return $this->content;
-    	}
+        if ($this->content !== NULL) {
+            return $this->content;
+        }
 
-	    $this->content = new stdClass;
+        $this->content = new stdClass;
         $this->content->items = array();
         $this->content->icons = array();
         $this->content->footer = '';
 
-	    // This lib breaks install if left at top level only include
-	    // when we know we need it
-	    if ($USER->id !== 0) {   
+        // This lib breaks install if left at top level only include
+        // when we know we need it
+        if ($USER->id !== 0) {
             require_once($CFG->dirroot.'/lib/simplepie/simplepie.class.php');
-		}
+        }
 
-		// Test for domain settings 
-		if( !$this->domain = get_config('blocks/gmail','domainname') ) {
-	    	$this->content->items = array(get_string('mustusegoogleauthenticaion','block_gmail'));
-        	$this->content->icons = array();
-    		return $this->content;
-		}
+        // Test for domain settings
+        if( !$this->domain = get_config('blocks/gmail','domainname')) {
+            $this->content->items = array(get_string('mustusegoogleauthenticaion','block_gmail'));
+            $this->content->icons = array();
+            return $this->content;
+        }
         $domain = $this->domain;
 
-        if( !$this->oauthsecret = get_config('blocks/gmail','oauthsecret') ) {
+        if( !$this->oauthsecret = get_config('blocks/gmail','oauthsecret')) {
             $this->content->items = array(get_string('missingoauthkey','block_gmail'));
             $this->content->icons = array();
             return $this->content;
@@ -137,14 +137,14 @@ class block_gmail extends block_list {
 
         $feederror = false;
         // Obtain gmail feed data
-        if(!$feeddata = $this->obtain_gmail_feed() ) {
+        if(!$feeddata = $this->obtain_gmail_feed()) {
             $feederror = true;
         } else {
-			// Parse google atom feed
-		    $feed = new SimplePie(); 
-		    $feed->set_raw_data($feeddata);
-		    $status = $feed->init();
-		    $msgs = $feed->get_items();
+            // Parse google atom feed
+            $feed = new SimplePie();
+            $feed->set_raw_data($feeddata);
+            $status = $feed->init();
+            $msgs = $feed->get_items();
         }
 
         if ($feederror) {
@@ -164,13 +164,13 @@ class block_gmail extends block_list {
 
             $this->content->items[] = '<img src="'.$OUTPUT->pix_url('gmail', 'block_gmail').'" alt="message" />&nbsp;' . $inboxlink.' '.$composelink.' '.$unreadmsgsstr.'<br/>';
 
-		    // Only show as many messages as specified in config
-		    $countmsg = true;
-		    if( !$msgnumber = get_config('blocks/gmail','msgnumber')) {
-		    	// 0 msg means as many as you want.
-		    	$countmsg = false;
-		    }
-		    $mc = 0;
+            // Only show as many messages as specified in config
+            $countmsg = true;
+            if( !$msgnumber = get_config('blocks/gmail','msgnumber')) {
+                // 0 msg means as many as you want.
+                $countmsg = false;
+            }
+            $mc = 0;
 
             // only show the detail if they have access to it
             if (!has_capability('block/gmail:viewlist', $this->page->context)) {
@@ -178,23 +178,23 @@ class block_gmail extends block_list {
                 $this->content->items[] = get_string('unread','block_gmail', $mc).($mc == 1 ? '' : 's').'<br/>';
             }
             else {
-    		    foreach( $msgs as $msg) {
+                foreach( $msgs as $msg) {
     
-    		    	if($countmsg and $mc == $msgnumber){
-    		    		break;
-    		    	}
-    		    	$mc++;
+                    if($countmsg and $mc == $msgnumber){
+                        break;
+                    }
+                    $mc++;
     
-    		    	// Displaying Message Data
-    		    	$author = $msg->get_author(); 
-    		    	$author->get_name();
-    		    	$summary = $msg->get_description();
+                    // Displaying Message Data
+                    $author = $msg->get_author();
+                    $author->get_name();
+                    $summary = $msg->get_description();
     
-    				// Google partners need a special gmail url
-    			    $servicelink = $msg->get_link();
-    		    	$servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$domain,$servicelink); 
+                    // Google partners need a special gmail url
+                    $servicelink = $msg->get_link();
+                    $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$domain,$servicelink); 
     
-    		    	// To Save Space given them option to show first and last or just last name
+                    // To Save Space given them option to show first and last or just last name
                     $authornames = split(" ",$author->get_name());
                     $author_first = array_shift($authornames);
                     $author_last = array_shift($authornames);
@@ -219,12 +219,12 @@ class block_gmail extends block_list {
                         $text .= '" href="'.$servicelink.'">'.format_string($msg->get_title()).'</a> '.$author_first.' '.$author_last;
                         $this->content->items[]  = $text;
                     }
-    		    }
-		    }
+                }
+            }
         }
 
-	    return $this->content;
-	}
+        return $this->content;
+    }
 
     /**
      * This function uses 2 Legged OAuth to return the atom feed for 
@@ -254,24 +254,25 @@ class block_gmail extends block_list {
         $url = $feed.'?xoauth_requestor_id='.urlencode($user); 
         
         // Perform a GET to obtain the feed
-        $curl = curl_init($url);  
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);  
-        curl_setopt($curl, CURLOPT_FAILONERROR, false);  
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FAILONERROR, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         // Stream of OAuth Header params
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array($request->to_header())); 
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array($request->to_header()));
 
         $feeddata = curl_exec($curl);
         $headers = curl_getinfo($curl);
         $errorNumber = curl_errno($curl);
         if (!$feeddata || $headers['http_code'] != 200) {
             // Prevent Users from seeing the really nasty errors unless thye are developers
-            $feederror = curl_error($curl); 
+            $feederror = curl_error($curl);
             debugging('Gmail feed (for '.$user.') failed with: '.$feederror.' '.$feeddata, DEBUG_DEVELOPER);
-            $feeddata = ''; 
+            $feeddata = '';
         }  
 
-        curl_close($curl);  
+        curl_close($curl);
         return $feeddata;
     }
 }
+
