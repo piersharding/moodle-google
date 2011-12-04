@@ -37,8 +37,11 @@ require_once "$CFG->libdir/adminlib.php";
 $configs   = array();
 
 $configs[] = new admin_setting_configtext('domainname', get_string('domainnamestr', 'block_gaccess'), get_string('domainnameinfo', 'block_gaccess'), '', PARAM_RAW, 30);
-
 $configs[] = new admin_setting_configcheckbox('newwinlink', get_string('newwinlink', 'block_gaccess'), get_string('newwinlink_desc', 'block_gaccess'), '1');
+$configs[] = new admin_setting_configcheckbox('gmail', get_string('gmail', 'block_gaccess'), get_string('gmail_desc', 'block_gaccess'), '0');
+$configs[] = new admin_setting_configcheckbox('docs', get_string('docs', 'block_gaccess'), get_string('docs_desc', 'block_gaccess'), '0');
+$configs[] = new admin_setting_configcheckbox('start', get_string('start', 'block_gaccess'), get_string('start_desc', 'block_gaccess'), '0');
+$configs[] = new admin_setting_configcheckbox('calendar', get_string('calendar', 'block_gaccess'), get_string('calendar_desc', 'block_gaccess'), '0');
 
 // Define the config plugin so it is saved to
 // the config_plugin table then add to the settings page

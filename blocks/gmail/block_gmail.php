@@ -100,8 +100,8 @@ class block_gmail extends block_list {
        }
 
         // quick and simple way to prevent block from showing up on users My Moodle if their email does not match the Google registered domain
-        $domainname = get_config('blocks/gmail','domainname');
-        if (!preg_match("/^[a-zA-Z0-9&\'\.\-\+]+@$domainname/",$USER->email)) {
+        $this->domain = (get_config('blocks/gmail','domainname') ? get_config('blocks/gmail','domainname') : get_config('auth/gsaml','domainname'));
+        if (!preg_match("/^[a-zA-Z0-9&\'\.\-\+]+@{$this->domain}/",$USER->email)) {
             $this->content = NULL;
             return $this->content;
         }
@@ -122,12 +122,11 @@ class block_gmail extends block_list {
         }
 
         // Test for domain settings
-        if( !$this->domain = get_config('blocks/gmail','domainname')) {
+        if(empty($this->domain)) {
             $this->content->items = array(get_string('mustusegoogleauthenticaion','block_gmail'));
             $this->content->icons = array();
             return $this->content;
         }
-        $domain = $this->domain;
 
         if( !$this->oauthsecret = get_config('blocks/gmail','oauthsecret')) {
             $this->content->items = array(get_string('missingoauthkey','block_gmail'));
@@ -159,8 +158,8 @@ class block_gmail extends block_list {
             // Obtain link option
             $newwinlnk = get_config('blocks/gmail','newwinlink');
 
-            $composelink = '<a '.(($newwinlnk)?'target="_new"':'').' href="'.'http://mail.google.com/a/'.$domain.'/?AuthEventSource=SSO#compose">'.$composestr.'</a>';
-            $inboxlink = '<a '.(($newwinlnk)?'target="_new"':'').' href="'.'http://mail.google.com/a/'.$domain.'">'.$inboxstr.'</a>';
+            $composelink = '<a '.(($newwinlnk)?'target="_new"':'').' href="'.'http://mail.google.com/a/'.$this->domain.'/?AuthEventSource=SSO#compose">'.$composestr.'</a>';
+            $inboxlink = '<a '.(($newwinlnk)?'target="_new"':'').' href="'.'http://mail.google.com/a/'.$this->domain.'">'.$inboxstr.'</a>';
 
             $this->content->items[] = '<img src="'.$OUTPUT->pix_url('gmail', 'block_gmail').'" alt="message" />&nbsp;' . $inboxlink.' '.$composelink.' '.$unreadmsgsstr.'<br/>';
 
@@ -179,21 +178,21 @@ class block_gmail extends block_list {
             }
             else {
                 foreach( $msgs as $msg) {
-    
+
                     if($countmsg and $mc == $msgnumber){
                         break;
                     }
                     $mc++;
-    
+
                     // Displaying Message Data
                     $author = $msg->get_author();
                     $author->get_name();
                     $summary = $msg->get_description();
-    
+
                     // Google partners need a special gmail url
                     $servicelink = $msg->get_link();
-                    $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$domain,$servicelink); 
-    
+                    $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$this->domain,$servicelink); 
+
                     // To Save Space given them option to show first and last or just last name
                     $authornames = split(" ",$author->get_name());
                     $author_first = array_shift($authornames);
@@ -202,17 +201,17 @@ class block_gmail extends block_list {
                     if( !$showfirstname = get_config('blocks/gmail','showfirstname')) {
                         $author_first = '';
                     }
-    
+
                     // Show last Name
                     if( !$showlastname = get_config('blocks/gmail','showlastname')) {
                         $author_last = '';
                     }
-    
-                    // I should do clean_param($summary, PARAM_TEXT) But then ' will have \' 
+
+                    // I should do clean_param($summary, PARAM_TEXT) But then ' will have \'
                     if ($newwinlnk) {
                         $text  = '<a target="_new" title="'.format_string($summary);
                         $text .= '" href="'.$servicelink.'">'.format_string($msg->get_title()).'</a> '.$author_first.' '.$author_last;
-    
+
                         $this->content->items[] = $text;
                     } else {
                         $text  = '<a title="'.format_string($summary);
