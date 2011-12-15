@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see http://opensource.org/licenses/gpl-3.0.html.
-* 
+*
 * @author     Chris Stones
 * @author     Piers Harding
 * @license    http://opensource.org/licenses/gpl-3.0.html     GNU Public License
 */
- 
+
 /**
  * GMail Block Global Settings
  *
@@ -37,6 +37,8 @@ $configs = array();
 
 $configs[] = new admin_setting_configtext('domainname', get_string('domainnamestr', 'block_gmail'), get_string('domainnameinfo', 'block_gmail'), '', PARAM_RAW, 30);
 
+$configs[] = new admin_setting_configtext('username', get_string('usernamestr', 'block_gmail'), get_string('usernameinfo', 'block_gmail'), 'username', PARAM_RAW, 30);
+
 $configs[] = new admin_setting_configpasswordunmask('oauthsecret', get_string('oauthsecretstr', 'block_gmail'), get_string('oauthsecretinfo', 'block_gmail'), '');
 
 $configs[] = new admin_setting_configtext('msgnumber', get_string('msgnumberunread', 'block_gmail'), get_string('msgnumberunreadinfo', 'block_gmail'), '0', PARAM_RAW, 5);
@@ -48,10 +50,6 @@ $configs[] = new admin_setting_configcheckbox('newwinlink', get_string('newwinli
 $configs[] = new admin_setting_configcheckbox('showfirstname', get_string('showfirstname', 'block_gmail'), get_string('showfirstnameinfo', 'block_gmail'), '1');
 
 $configs[] = new admin_setting_configcheckbox('showlastname', get_string('showlastname', 'block_gmail'), get_string('showlastnameinfo', 'block_gmail'), '1');
-
-// TODO: And this ink to the compant test
-// http://googlealpha.mroomsdev.com/blocks/gmail/simplepie/compatibility_test/sp_compatibility_test.php
-// $CFG->dirroot.'/blocks/gmail/simplepie/compatibility_test/sp_compatibility_test.php';
 
 // Define the config plugin so it is saved to
 // the config_plugin table then add to the settings page

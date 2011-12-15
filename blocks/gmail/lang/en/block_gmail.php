@@ -15,7 +15,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see http://opensource.org/licenses/gpl-3.0.html.
-* 
+*
 * @author     Chris Stones
 * @author     Piers Harding
 * @license    http://opensource.org/licenses/gpl-3.0.html     GNU Public License
@@ -30,6 +30,8 @@ $string['unread'] = 'You have {$a} unread message';
 $string['gmail'] = 'gmail';
 $string['domainnamestr'] = 'Domain Name';
 $string['domainnameinfo'] = 'This is your Google Apps Domain Name - usually something like hogwarts.school.nz';
+$string['usernamestr'] = 'User Name from';
+$string['usernameinfo'] = 'This is the Moodle user field that the Google User is derived from - defaults to username, but email is another possibility';
 $string['oauthsecretstr'] = 'OAuth Consumer Secret';
 $string['oauthsecretinfo'] = 'This is the same value you find on Google\'s Manage OAuth Access page under Advanced tools.';
 $string['msgnumberunread'] = "Unread Message Count";

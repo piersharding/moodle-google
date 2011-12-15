@@ -15,7 +15,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see http://opensource.org/licenses/gpl-3.0.html.
-* 
+*
 * @author     Chris Stones
 * @author     Piers Harding
 * @license    http://opensource.org/licenses/gpl-3.0.html     GNU Public License
@@ -25,13 +25,13 @@
  * GMail Block ProtoType 1
  * Oct. 16, 2008
  * MoodleRooms Inc.
- * 
+ *
  * This block doesn't just have to be for the educational partners
- * It could just be a GMail Block by itself. 
+ * It could just be a GMail Block by itself.
  * It would just require a little configuration.
  * PREREQ: Requires the G Saml auth plugin to obtain domain name
  * PREREQ: Requires curl be installed on server
- * 
+ *
  * @author Chris Stones
  * @version $Id$
  * @package block_gmail
@@ -46,10 +46,10 @@
 
    7. The Gmail block will display a link to Compose a new email in Gmail
 
-   8. The Gmail block will verify that a 
+   8. The Gmail block will verify that a
       Gmail account exists for the user before displaying their email.
 
-   9. The Gmail block will call the Gmail account creation process 
+   9. The Gmail block will call the Gmail account creation process
       in the GMail Batch Account library if a Gmail account doesn't exist.
 
 
@@ -97,7 +97,10 @@ class block_gmail extends block_list {
         if (!isloggedin()) {
             $this->content = NULL;
             return $this->content;
-       }
+        }
+
+        // which field is the username in
+        $this->userfield = (get_config('blocks/gmail','username') ? get_config('blocks/gmail','username') : 'username');
 
         // quick and simple way to prevent block from showing up on users My Moodle if their email does not match the Google registered domain
         $this->domain = (get_config('blocks/gmail','domainname') ? get_config('blocks/gmail','domainname') : get_config('auth/gsaml','domainname'));
@@ -148,7 +151,7 @@ class block_gmail extends block_list {
 
         if ($feederror) {
             $this->content->items[] = get_string('sorrycannotgetmail','block_gmail');
-        } else {   
+        } else {
 
             //$unreadmsgsstr = get_string('unreadmsgs','block_gmail');
             $unreadmsgsstr = '';
@@ -191,7 +194,7 @@ class block_gmail extends block_list {
 
                     // Google partners need a special gmail url
                     $servicelink = $msg->get_link();
-                    $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$this->domain,$servicelink); 
+                    $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$this->domain,$servicelink);
 
                     // To Save Space given them option to show first and last or just last name
                     $authornames = split(" ",$author->get_name());
@@ -226,8 +229,8 @@ class block_gmail extends block_list {
     }
 
     /**
-     * This function uses 2 Legged OAuth to return the atom feed for 
-     * the users Gmail. 
+     * This function uses 2 Legged OAuth to return the atom feed for
+     * the users Gmail.
      */
     function obtain_gmail_feed() {
         global $USER;
@@ -240,18 +243,17 @@ class block_gmail extends block_list {
         if (!class_exists('OAuthConsumer')) {
             require_once('OAuth.php');
         }
-        $consumer  = new OAuthConsumer($this->domain, $this->oauthsecret, NULL);       
-        $parts = split('@', $USER->username);
+        $consumer  = new OAuthConsumer($this->domain, $this->oauthsecret, NULL);
+        $parts = split('@', $USER->{$this->userfield});
         $user = array_shift($parts);
         $user      = "$user@$this->domain";
-        $user = 'piers@ompka.net';
-        $feed      = 'https://mail.google.com/mail/feed/atom';  
-        $params    = array('xoauth_requestor_id' => $user); 
-        $request   = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $feed, $params);  
-        $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, NULL);  
+        $feed      = 'https://mail.google.com/mail/feed/atom';
+        $params    = array('xoauth_requestor_id' => $user);
+        $request   = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $feed, $params);
+        $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, NULL);
         // URL Encode the the params
-        $url = $feed.'?xoauth_requestor_id='.urlencode($user); 
-        
+        $url = $feed.'?xoauth_requestor_id='.urlencode($user);
+
         // Perform a GET to obtain the feed
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -268,7 +270,7 @@ class block_gmail extends block_list {
             $feederror = curl_error($curl);
             debugging('Gmail feed (for '.$user.') failed with: '.$feederror.' '.$feeddata, DEBUG_DEVELOPER);
             $feeddata = '';
-        }  
+        }
 
         curl_close($curl);
         return $feeddata;
