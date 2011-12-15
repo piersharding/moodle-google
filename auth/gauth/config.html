@@ -24,10 +24,14 @@
 */
 
     global $CFG;
+$configs[] = new admin_setting_configtext('domainname', get_string('domainname','auth_gsaml'), "", '', PARAM_RAW, 30);
 
     // Set to defaults if undefined
+    if (!isset ($config->domainname)) {
+        $config->domainname = '<google apps domain>';
+    }
     if (!isset ($config->username)) {
-        $config->username = 'openid';
+        $config->username = 'email';
     }
     if (!isset ($config->userfield)) {
         $config->userfield = 'idnumber';
@@ -43,6 +47,13 @@
     }
 ?>
 <table cellspacing="0" cellpadding="5" border="0">
+<tr valign="top" class="required">
+    <td align="right"><?php print_string("auth_gauth_domainname", "auth_gauth"); ?>:</td>
+    <td>
+        <input name="domainname" type="text" size="30" value="<?php echo $config->domainname; ?>" />
+    </td>
+    <td><?php print_string("auth_gauth_domainname_description", "auth_gauth"); ?></td>
+</tr>
 <tr valign="top" class="required">
     <td align="right"><?php print_string("auth_gauth_username", "auth_gauth"); ?>:</td>
     <td>

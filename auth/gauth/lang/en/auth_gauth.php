@@ -46,11 +46,14 @@ $string['auth_gauth_casesensitive_description'] = 'When doing the lookup to matc
 $string['auth_gauth_duallogin'] = 'Enable Dual login for users';
 $string['auth_gauth_duallogin_description'] = 'Enable user to login using their assigned login auth module and Google OpenId SSO';
 
+$string['auth_gauth_domainname'] = 'Google Apps Domain Name';
+$string['auth_gauth_domainname_description'] = 'Google Apps Domain Namee - this ensures that only users from your domain can login - leave blank to open for all';
 $string['auth_gauth_username'] = 'OpenId username mapping';
-$string['auth_gauth_username_description'] = 'Google OpenId attribute that is mapped to Moodle username - this defaults to openid, but you might want to use email';
+$string['auth_gauth_username_description'] = 'Google OpenId attribute that is mapped to Moodle username - this defaults to email, but you might want to use openid';
 $string['auth_gauth_userfield'] = 'Moodle username mapping';
-$string['auth_gauth_userfield_description'] = 'Moodle user field that is mapped to the Google OpenId username attribute - this defaults to idnumber, but could be username, or email';
+$string['auth_gauth_userfield_description'] = 'Moodle user field that is mapped to the Google OpenId username attribute - this defaults to idnumber, but could be username, or email.  If you choose idnumber then make sure that the idnumber field below is set to openid';
 
+$string['auth_gauth_invalid_domain'] = 'You are attempting to login from an invalid domain: ';
 $string['auth_gauth_field_instructions'] = 'Here you can map further field values from Google to a Moodle user accounts.  The fields available are: firstname, lastname, email, lang, and openid';
 $string['auth_gauth_user_cancel'] = 'The user has cancelled the login at Google';
 $string['auth_gauth_user_not_loggedin'] = 'User not logged in';

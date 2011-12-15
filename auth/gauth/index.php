@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 * Copyright (C) 2011 Catalyst IT Ltd
 *
@@ -24,7 +24,7 @@
 */
 /**
  * index.php - landing page for auth/gauth based Google OpenId login
- * 
+ *
  * @author  Piers Harding - made quite a number of changes
  * @version 1.0
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -48,7 +48,7 @@ unset($SESSION->GAUTHSessionControlled);
 require_once('openid.php');
 
 
-// save the jump target - this is checked later that it 
+// save the jump target - this is checked later that it
 // starts with $CFG->wwwroot, and cleaned
 if (isset($_GET['wantsurl'])) {
     $SESSION->wantsurl = $_GET['wantsurl'];
@@ -98,7 +98,7 @@ if (empty($data)) {
     die();
 }
 
-// check for a wantsurl in the existing Moodle session 
+// check for a wantsurl in the existing Moodle session
 $wantsurl = isset($SESSION->wantsurl) ? $SESSION->wantsurl : FALSE;
 if (empty($wantsurl) && isset($SESSION->wantsurl)) {
     $wantsurl = $SESSION->wantsurl;
@@ -123,6 +123,11 @@ if (empty($data['firstname']) || empty($data['lastname']) || empty($data['email'
     die();
 }
 
+// check domain
+if (!empty($pluginconfig->domainname) && !preg_match('/'.$pluginconfig->domainname.'$/', $data['email'])) {
+    print_error(get_string("auth_gauth_invalid_domain", "auth_gauth") . $data['email']);
+}
+
 auth_gauth_err('data: '.var_export($data, true));
 
 // we require the plugin to know that we are now doing a gauth login in hook puser_login
@@ -134,10 +139,6 @@ $GLOBALS['gauth_login_attributes'] = $data;
 // check user name attribute actually passed
 if(!isset($data[$pluginconfig->username])) {
     auth_gauth_err('auth failed due to missing username gauth attribute: '.$pluginconfig->username);
-    session_write_close();
-    $USER = new object();
-    $USER->id = 0;
-    require_once('../../config.php');
     print_error(get_string("auth_gauth_username_error", "auth_gauth"));
 }
 
@@ -151,10 +152,6 @@ else {
 auth_gauth_err('username: '.var_export($username, true));
 if ($username != clean_param($username, PARAM_TEXT)) {
     auth_gauth_err('auth failed due to illegal characters in username: '.$username);
-    session_write_close();
-    $USER = new object();
-    $USER->id = 0;
-    require_once('../../config.php');
     print_error('pluginauthfailedusername', 'auth_gauth', '', clean_param($data[$pluginconfig->username], PARAM_TEXT));
 }
 
@@ -169,10 +166,6 @@ auth_gauth_err('userdata: '.var_export($user_data, true));
 
 if (isset($pluginconfig->createusers)) {
     if (!$pluginconfig->createusers && ! $user_data) {
-        session_write_close();
-        $USER = new object();
-        $USER->id = 0;
-        require_once('../../config.php');
         print_error('pluginauthfailed', 'auth_gauth', '', $pluginconfig->userfield.'/'.$data[$pluginconfig->username]);
     }
 }
@@ -183,17 +176,13 @@ if ($user_data) {
 
 if (isset($pluginconfig->duallogin) && $pluginconfig->duallogin) {
     $USER = auth_gauth_authenticate_user_login($username, time());
-} 
-else {    
+}
+else {
     $USER = authenticate_user_login($username, time());
 }
 
 // check that the signin worked
 if ($USER == false) {
-    session_write_close();
-    $USER = new object();
-    $USER->id = 0;
-    require_once('../../config.php');
     print_error('pluginauthfailed', 'auth_gauth', '', $data[$pluginconfig->username]);
 }
 auth_gauth_err('auth_gauth: USER logged in: '.var_export($USER, true));
@@ -220,13 +209,13 @@ redirect($urltogo);
 
 /**
  * Copied from moodlelib:authenticate_user_login()
- * 
+ *
  * WHY? because I need to hard code the plugins to auth_gauth, and this user
  * may be set to any number of other types of login method
- * 
+ *
  * First of all - make sure that they aren't nologin - we don't mess with that!
- * 
- * 
+ *
+ *
  * Given a username and password, this function looks them
  * up using the currently selected authentication mechanism,
  * and if the authentication is successful, it returns a
@@ -248,7 +237,7 @@ function auth_gauth_authenticate_user_login($username, $password) {
     global $CFG, $DB;
 
     // ensure that only gauth auth module is chosen
-    $authsenabled = get_enabled_auth_plugins();    
+    $authsenabled = get_enabled_auth_plugins();
 
     if ($user = get_complete_user_data('username', $username, $CFG->mnet_localhost_id)) {
         $auth = empty($user->auth) ? 'manual' : $user->auth;  // use manual if auth not set

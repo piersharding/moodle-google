@@ -33,7 +33,7 @@ require_once($CFG->libdir.'/authlib.php');
  * Google OpenId authentication plugin.
 **/
 class auth_plugin_gauth extends auth_plugin_base {
-    
+
     /**
     * Constructor.
     */
@@ -41,7 +41,7 @@ class auth_plugin_gauth extends auth_plugin_base {
         $this->authtype = 'gauth';
         $this->config = get_config('auth/gauth');
     }
-    
+
     /**
     * Returns true if the username and password work and false if they are
     * wrong or don't exist.
@@ -58,8 +58,8 @@ class auth_plugin_gauth extends auth_plugin_base {
         }
         return FALSE;
     }
-    
-    
+
+
     /**
     * Returns the user information for 'external' users. In this case the
     * attributes provided by Identity Provider
@@ -94,11 +94,11 @@ class auth_plugin_gauth extends auth_plugin_base {
             }
             return $result;
         }
-        
+
         return FALSE;
     }
 
-    
+
     /**
     * Returns the list of country codes
     *
@@ -120,18 +120,18 @@ class auth_plugin_gauth extends auth_plugin_base {
 
         return $names;
     }
-    
+
 
     /*
     * Returns array containing attribute mappings between Moodle and Google.
     */
     function get_attributes() {
         $configarray = (array) $this->config;
-        
+
         $fields = array("firstname", "lastname", "email", "phone1", "phone2",
             "department", "address", "city", "country", "description",
             "idnumber", "lang", "guid");
-        
+
         $moodleattributes = array();
         foreach ($fields as $field) {
             if (isset($configarray["field_map_$field"])) {
@@ -140,7 +140,7 @@ class auth_plugin_gauth extends auth_plugin_base {
         }
         return $moodleattributes;
     }
-    
+
     /**
     * Returns true if this authentication plugin is 'internal'.
     *
@@ -149,7 +149,7 @@ class auth_plugin_gauth extends auth_plugin_base {
     function is_internal() {
         return false;
     }
-    
+
     /**
     * Returns true if this authentication plugin can change the user's
     * password.
@@ -159,18 +159,18 @@ class auth_plugin_gauth extends auth_plugin_base {
     function can_change_password() {
         return false;
     }
-    
+
     function loginpage_hook() {
         // Prevent username from being shown on login page after logout
         $GLOBALS['CFG']->nolastloggedin = true;
-        
+
         return;
     }
 
     function logoutpage_hook() {
         global $SESSION;
     }
-    
+
     /**
     * Prints a form for configuring this authentication plugin.
     *
@@ -190,7 +190,7 @@ class auth_plugin_gauth extends auth_plugin_base {
      */
      function validate_form(&$form, &$err) {
      }
-    
+
     /**
     * Processes and stores configuration data for this authentication plugin.
     *
@@ -207,12 +207,15 @@ class auth_plugin_gauth extends auth_plugin_base {
         }
         if (!isset ($config->casesensitive)) {
             $config->casesensitive = '';
-        }        
+        }
         if (!isset ($config->createusers)) {
             $config->createusers = '';
         }
         if (!isset ($config->duallogin)) {
             $config->duallogin = '';
+        }
+        if (!isset ($config->domainname)) {
+            $config->domainname = '';
         }
 
         // save settings
@@ -221,10 +224,11 @@ class auth_plugin_gauth extends auth_plugin_base {
         set_config('casesensitive',   $config->casesensitive,   'auth/gauth');
         set_config('createusers',     $config->createusers,     'auth/gauth');
         set_config('duallogin',       $config->duallogin,       'auth/gauth');
-        
+        set_config('domainname',      $config->domainname,       'auth/gauth');
+
         return true;
     }
-    
+
     /**
     * Cleans and returns first of potential many values (multi-valued attributes)
     *
@@ -233,7 +237,7 @@ class auth_plugin_gauth extends auth_plugin_base {
     function get_first_string($string) {
         $list = split( ';', $string);
         $clean_string = trim($list[0]);
-        
+
         return $clean_string;
     }
 
