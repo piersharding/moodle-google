@@ -51,6 +51,32 @@ function xmldb_local_oauth_upgrade($oldversion) {
             $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
         }
 
+        if (! $DB->get_record('oauth_site_directory', array('name' => 'google.com')) {
+            // create a default entry for all Google Fusion OAuth integration
+            $record = new object();
+            $record->name                = 'google.com';
+            $record->request_token_url   = 'https://www.google.com/accounts/OAuthGetRequestToken';
+            $record->authorize_token_url = 'https://www.google.com/accounts/OAuthAuthorizeToken';
+            $record->access_token_url    = 'https://www.google.com/accounts/OAuthGetAccessToken';
+            $record->consumer_key        = '<your consumer key>';
+            $record->consumer_secret     = '<your consumer secret>';
+            $record->enabled             = '0';
+            $DB->insert_record('oauth_site_directory', $record);
+        }
+
+        if (! $DB->get_record('oauth_site_directory', array('name' => 'googledocs.com')) {
+            // create a default entry for all Google Docs OAuth integration
+            $record = new object();
+            $record->name                = 'googledocs.com';
+            $record->request_token_url   = 'https://www.google.com/accounts/OAuthGetRequestToken';
+            $record->authorize_token_url = 'https://www.google.com/accounts/OAuthAuthorizeToken';
+            $record->access_token_url    = 'https://www.google.com/accounts/OAuthGetAccessToken';
+            $record->consumer_key        = '<your consumer key>';
+            $record->consumer_secret     = '<your consumer secret>';
+            $record->enabled             = '0';
+            $DB->insert_record('oauth_site_directory', $record);
+        }
+
     /// oauth savepoint reached
         upgrade_plugin_savepoint($result, 2010060903, 'local', 'oauth');
     }
