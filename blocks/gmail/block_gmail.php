@@ -104,10 +104,6 @@ class block_gmail extends block_list {
 
         // quick and simple way to prevent block from showing up on users My Moodle if their email does not match the Google registered domain
         $this->domain = (get_config('blocks/gmail','domainname') ? get_config('blocks/gmail','domainname') : get_config('auth/gsaml','domainname'));
-        if (!preg_match("/^[a-zA-Z0-9&\'\.\-\+]+@{$this->domain}/",$USER->email)) {
-            $this->content = NULL;
-            return $this->content;
-        }
 
         if ($this->content !== NULL) {
             return $this->content;

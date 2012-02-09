@@ -30,8 +30,7 @@ require_once($CFG->dirroot.'/local/oauth/lib.php');
 
 class googlelinks_oauth_docs extends local_oauth {
 
-    private $scope = 'https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com/';
-//     private $api = 'https://docs.google.com/feeds/default/private/full'; // version 3 of the spec - not quite there yet
+    private $scope = 'https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com/.';
     private $api = 'https://docs.google.com/feeds/documents/private/full';
     private $site_name = 'googledocs.com';
 
@@ -72,6 +71,58 @@ class googlelinks_oauth_docs extends local_oauth {
     }
 
     /**
+     * Get a user content type file
+     *
+     * @param string $fileurl the Google user content file url
+     * @return string file contents
+     */
+    public function get_user_content_file($fileurl) {
+        global $USER;
+        $parts = split('@', $USER->email);
+        $user = array_shift($parts);
+        $domain = $this->site->consumer_key;
+        $oauthsecret = $this->site->consumer_secret;
+        $user      = "$user@$domain";
+        $parameters = array();
+        list($download, $params) = explode('?', $fileurl, 2);
+        $params = explode('&', $params);
+        foreach ($params as $param) {
+            list($k, $v) = explode('=', $param, 2);
+            $parameters[$k] = $v;
+        }
+        $parameters['xoauth_requestor_id'] = $user;
+
+        $consumer  = new OAuthConsumer($domain, $oauthsecret, NULL);
+        $request   = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $download, $parameters);
+        $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, NULL);
+
+        // URL Encode the the params
+        $params = array();
+        foreach ($parameters as $k => $v) {
+            $params[]= "$k=$v";
+        }
+        $url = $download . '?' . implode('&', $params);
+
+        // Perform a GET to obtain the file
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FAILONERROR, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array($request->to_header()));
+        $content = curl_exec($curl);
+        $headers = curl_getinfo($curl);
+        $errorNumber = curl_errno($curl);
+        if (!$content || $headers['http_code'] != 200) {
+            $error = curl_error($curl);
+            error_log('GoogleLinks: Get user content (for '.$user.' - '.$url.') failed with: '.$error.' '.$content);
+            $content = '';
+        }
+        curl_close($curl);
+
+        return $content;
+    }
+
+    /**
     * Add a site into the site directory
      * @param array $oauth_params parameters to pass with token request
     * @return bool success/fail
@@ -100,11 +151,11 @@ class googlelinks_oauth_docs extends local_oauth {
     */
     #FIXME
     public function get_file_list($search = ''){
-        global $CFG, $OUTPUT;
+        global $CFG, $OUTPUT, $SESSION;
 
         $content = $this->get_docs_feed($search);
         $xml = new SimpleXMLElement($content);
-
+        $SESSION->googlelinks = array();
 
         $files = array();
         foreach($xml->entry as $gdoc){
@@ -119,23 +170,25 @@ class googlelinks_oauth_docs extends local_oauth {
             switch($type){
                 case 'document':
                     $title = $gdoc->title.'.rtf';
-                    $source = 'https://docs.google.com/feeds/download/documents/Export?id='.$docid.'&exportFormat=rtf';
+                    $download = 'https://docs.google.com/feeds/download/documents/Export?id='.$docid.'&exportFormat=rtf';
                     break;
                 case 'presentation':
                     $title = $gdoc->title.'.ppt';
-                    $source = 'https://docs.google.com/feeds/download/presentations/Export?id='.$docid.'&exportFormat=ppt';
+                    $download = 'https://docs.google.com/feeds/download/presentations/Export?id='.$docid.'&exportFormat=ppt';
                     break;
                 case 'spreadsheet':
                     $title = $gdoc->title.'.xls';
-                    $source = 'https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key='.$docid.'&exportFormat=xls';
+                    $download = 'https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key='.$docid.'&exportFormat=xls';
                     break;
                 case 'pdf':
                     $title  = (string)$gdoc->title;
-                    $source = (string)$gdoc->content[0]->attributes()->src;
+                    $download = (string)$gdoc->content[0]->attributes()->src;
                     break;
             }
+            $source = (string)$gdoc->link->attributes()->href;
 
             if(!empty($source)){
+                $SESSION->googlelinks[$source] = $download;
                 $files[] =  array(  'title' => $title,
                                     'url' => "{$gdoc->link[0]->attributes()->href}",
                                     'source' => $source,
@@ -144,7 +197,6 @@ class googlelinks_oauth_docs extends local_oauth {
                             );
             }
         }
-//         error_log('files: '.var_export($files, true));
         return $files;
     }
 
@@ -156,6 +208,9 @@ class googlelinks_oauth_docs extends local_oauth {
         }
         $response = $this->getRequest($url, array());
         if ($response->status != 200) {
+            if ($response->status == 401) {
+                $this->wipe_auth();
+            }
             throw new local_oauth_exception($response->message." : ".$response->body);
         }
 
@@ -165,12 +220,30 @@ class googlelinks_oauth_docs extends local_oauth {
         return $response->body;
     }
 
+    /**
+     * Get the actual file contents
+     * @param string $url
+     * @throws local_oauth_exception
+     * @return string
+     */
     public function get_file($url) {
+        global $SESSION;
 
         $parameters = array();
-        $response = $this->getRequest($url, $parameters);
+        $download = $SESSION->googlelinks[$url];
+
+        // handle User Content files separately
+        if (preg_match('/usercontent/', $download)) {
+            $result = $this->get_user_content_file($download);
+            if (empty($result)) {
+                throw new local_oauth_exception('Could not get file');
+            }
+            return $result;
+        }
+
+        // normal files
+        $response = $this->getRequest($download, $parameters);
         if ($response->status != 200) {
-            error_log('response: '.var_export($response, true));
             throw new local_oauth_exception($response->message." : ".$response->body);
         }
 
@@ -257,7 +330,6 @@ class repository_googlelinks extends repository {
     public function get_file($url, $file) {
         global $CFG;
         $path = $this->prepare_file($file);
-        error_log('file: '.$file);
 
         $fp = fopen($path, 'w');
         $content = $this->oauth->get_file($url);

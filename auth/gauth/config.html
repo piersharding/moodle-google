@@ -24,7 +24,7 @@
 */
 
     global $CFG;
-$configs[] = new admin_setting_configtext('domainname', get_string('domainname','auth_gsaml'), "", '', PARAM_RAW, 30);
+$configs[] = new admin_setting_configtext('domainname', get_string('domainname','auth_gauth'), "", '', PARAM_RAW, 30);
 
     // Set to defaults if undefined
     if (!isset ($config->domainname)) {

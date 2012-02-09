@@ -33,6 +33,7 @@
 * 2011-10  Created
 **/
 
+$string['domainname'] = 'Domain';
 $string['pluginname']         = 'Google OpenId Authentication';
 $string['auth_gauthtitle']         = 'Google OpenId Authentication';
 $string['auth_gauthdescription']   = 'SSO Authentication using Google OpenId';
@@ -63,3 +64,4 @@ $string['auth_gauth_openid_key_empty'] = 'Key fields of firstname, lastname, or 
 $string['auth_gauth_username_error'] = 'Google returned a set of data that does not contain the OpenId username mapping field. This field is required to login';
 $string['pluginauthfailedusername'] = 'The Google OpenId authentication plugin failed - user {$a} disallowed due to invalid username format';
 $string['pluginauthfailed'] = 'The Google OpenId authentication plugin failed - user {$a} disallowed (no user auto creation?) or dual login disabled';
+$string['notconfigured'] = 'auth/gauth is not configured for use';

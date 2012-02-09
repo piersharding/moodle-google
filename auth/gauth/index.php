@@ -37,6 +37,11 @@ global $CFG, $USER, $SESSION;
 // do the normal Moodle bootstraping so we have access to all config and the DB
 require_once('../../config.php');
 
+// Check plugin is active
+if (!is_enabled_auth('gauth')) {
+    print_error(get_string("notconfigured", "auth_gauth"));
+}
+
 // get the plugin config for gauth
 $pluginconfig = get_config('auth/gauth');
 if (!isset($pluginconfig->userfield) || empty($pluginconfig->userfield)) {

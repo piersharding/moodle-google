@@ -65,10 +65,11 @@ class block_gaccess extends block_list {
 
         // quick and simple way to prevent block from showing up on users My Moodle if their email does not match the Google registered domain
         $domain = (get_config('blocks/gaccess','domainname') ? get_config('blocks/gaccess','domainname') : get_config('auth/gsaml','domainname'));
-        if (!preg_match("/^[a-z0-9&\'\.\-\+]+@$domain/",$USER->email)) {
-            $this->content = NULL;
-            return $this->content;
-        }
+        // Why would we care?  So long as the config stacks up this shouldnt matter
+//         if (!preg_match("/^[a-z0-9&\'\.\-\+]+@$domain/",$USER->email)) {
+//             $this->content = NULL;
+//             return $this->content;
+//         }
 
         if ($this->content !== NULL) {
             return $this->content;
