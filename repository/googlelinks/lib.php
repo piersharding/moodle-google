@@ -274,7 +274,7 @@ class repository_googlelinks extends repository {
     * Add Plugin settings input to Moodle form
      * @param object $mform
     */
-    public function type_config_form($mform) {
+    public static function type_config_form($mform) {
         global $CFG;
         parent::type_config_form($mform);
     }
