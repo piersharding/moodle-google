@@ -352,13 +352,16 @@ class LightOpenID
         return file_get_contents($url, false, $context);
     }
 
+
     protected function request($url, $method='GET', $params=array(), $update_claimed_id=false)
     {
         if (function_exists('curl_init')
             && (!in_array('https', stream_get_wrappers()) || !ini_get('safe_mode') && !ini_get('open_basedir'))
         ) {
+            auth_gauth_err('using CURL');
             return $this->request_curl($url, $method, $params, $update_claimed_id);
         }
+        auth_gauth_err('using STREAMS: this is not likely to work properly for Google OpenId - you need to activate CURL');
         return $this->request_streams($url, $method, $params, $update_claimed_id);
     }
 
@@ -689,9 +692,11 @@ class LightOpenID
         # id_res, in order to avoid throwing errors.
         if(isset($this->data['openid_user_setup_url'])) {
             $this->setup_url = $this->data['openid_user_setup_url'];
+            auth_gauth_err('validate failed  - setup_url: '.$this->data['openid_user_setup_url']);
             return false;
         }
         if($this->mode != 'id_res') {
+            auth_gauth_err('validate failed  - invalid mode: '.var_export($this->mode, true));
             return false;
         }
 
@@ -719,6 +724,7 @@ class LightOpenID
         if ($this->data['openid_return_to'] != $this->returnUrl) {
             # The return_to url must match the url of current request.
             # I'm assuing that noone will set the returnUrl to something that doesn't make sense.
+            auth_gauth_err('validate failed  - invalid return_to: '.$this->data['openid_return_to'] .'/'. $this->returnUrl);
             return false;
         }
 
@@ -740,6 +746,7 @@ class LightOpenID
 
         $response = $this->request($server, 'POST', $params);
 
+        auth_gauth_err('is valid check: '.var_export($response, true));
         return preg_match('/is_valid\s*:\s*true/i', $response);
     }
 

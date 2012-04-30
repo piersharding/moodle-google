@@ -30,7 +30,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  * @package auth/gauth
  */
-define('GAUTH_DEBUG', 0);
 
 global $CFG, $USER, $SESSION;
 
@@ -74,19 +73,22 @@ try {
           'contact/country/home',
           'pref/language',
         );
+        auth_gauth_err('handing off to Google');
         header('Location: ' . $openid->authUrl());
         die();
 	}
 	elseif($openid->mode == 'cancel') {
+	    auth_gauth_err('Cancelled');
 	    print_error(get_string("auth_gauth_user_cancel", "auth_gauth"));
 	    die();
 	}
 	elseif($openid->validate()) {
+	    auth_gauth_err('Validated');
 		$data = $openid->getAttributes();
 		$data['openid'] = $openid->identity;
 	}
 	else {
-	    echo "The user has not logged in";
+	    auth_gauth_err('validation failed');
 	    print_error(get_string("auth_gauth_user_not_loggedin", "auth_gauth"));
 	    die();
 	}
@@ -343,8 +345,10 @@ function auth_gauth_addsingleslashes($input){
  * @param string $msg
  */
 function auth_gauth_err($msg) {
+    global $CFG;
+
     // check if we are debugging
-    if (! constant('GAUTH_DEBUG')) {
+    if (! $CFG->debug == DEBUG_DEVELOPER) {
         return;
     }
     error_log('auth/gauth: '.$msg);

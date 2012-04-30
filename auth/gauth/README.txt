@@ -25,3 +25,14 @@ Install instructions:
     <br>Click <a href="auth/gauth/index.php">here</a> to login with SSO
 - 6 Save the changes for the 'Common settings'
 
+
+Problems:
+
+If there is a problem with authentication, then please check:
+  * your attribute matching from Google to Moodle
+  * Your server clock time is synchronised with an appropriate NTP server (NONCE will be incorrect if you don't)
+  * You MUST ALWAYS have the CURL extension active - the POST back verification most likely will not work unless you do.
+
+ Debugging:
+  * you can get quite a lot of extra information in the error.log by editing auth/gauth/index.php and setting:
+     define('GAUTH_DEBUG', 1); // this should be 0 to turn off
