@@ -25,6 +25,9 @@ Install instructions:
     <br>Click <a href="auth/gauth/index.php">here</a> to login with SSO
 - 6 Save the changes for the 'Common settings'
 
+Country attribute:
+is the 2 letter ISO country code, ie NZ for New Zealand.  The default constant value is taken from
+the field mappings if the mapping offered is not an available attribute, and 'contact/country/home' is not present.
 
 Problems:
 
@@ -32,6 +35,9 @@ If there is a problem with authentication, then please check:
   * your attribute matching from Google to Moodle
   * Your server clock time is synchronised with an appropriate NTP server (NONCE will be incorrect if you don't)
   * You MUST ALWAYS have the CURL extension active - the POST back verification most likely will not work unless you do.
+  * to make CURL work you must have extension=curl.so somewhere in your config (usually in a separate file sunc has /etc/php.d/curl.ini, or /etc/php5/conf.d/curl.so)
+  * safe_mode must be Off
+  * open_basedir must be unset (seems to come up as a problem with CentOS - use php_admin_value open_basedir none in Apache2 config
 
  Debugging:
   * you can get quite a lot of extra information in the error.log by editing auth/gauth/index.php and setting:

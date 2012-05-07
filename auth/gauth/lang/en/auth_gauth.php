@@ -48,7 +48,7 @@ $string['auth_gauth_duallogin'] = 'Enable Dual login for users';
 $string['auth_gauth_duallogin_description'] = 'Enable user to login using their assigned login auth module and Google OpenId SSO';
 
 $string['auth_gauth_domainname'] = 'Google Apps Domain Name';
-$string['auth_gauth_domainname_description'] = 'Google Apps Domain Namee - this ensures that only users from your domain can login - leave blank to open for all';
+$string['auth_gauth_domainname_description'] = 'Google Apps Domain Name - this ensures that only users from your domain can login - leave blank to open for all';
 $string['auth_gauth_username'] = 'OpenId username mapping';
 $string['auth_gauth_username_description'] = 'Google OpenId attribute that is mapped to Moodle username - this defaults to email, but you might want to use openid';
 $string['auth_gauth_userfield'] = 'Moodle username mapping';
