@@ -25,6 +25,9 @@ Install instructions:
     <br>Click <a href="auth/gauth/index.php">here</a> to login with SSO
 - 6 Save the changes for the 'Common settings'
 
+Multiple Domains:
+If you want to allow multiple domains access in, then set domainname to a comma delimited list of the valid domains.
+
 Country attribute:
 is the 2 letter ISO country code, ie NZ for New Zealand.  The default constant value is taken from
 the field mappings if the mapping offered is not an available attribute, and 'contact/country/home' is not present.
