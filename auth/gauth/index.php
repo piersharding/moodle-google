@@ -131,8 +131,20 @@ if (empty($data['firstname']) || empty($data['lastname']) || empty($data['email'
 }
 
 // check domain
-if (!empty($pluginconfig->domainname) && !preg_match('/'.$pluginconfig->domainname.'$/', $data['email'])) {
-    print_error(get_string("auth_gauth_invalid_domain", "auth_gauth") . $data['email']);
+if (!empty($pluginconfig->domainname)) {
+    $domains = explode(',', $pluginconfig->domainname);
+    $pass = false;
+    foreach ($domains as $domain) {
+        auth_gauth_err('openid: checking - '.$domain.'/'.$data['email']);
+        if (preg_match('/'.$domain.'$/', $data['email'])) {
+            $pass = true;
+            auth_gauth_err('openid: domain matched - '.$domain.'/'.$data['email']);
+            break;
+        }
+    }
+    if (!$pass) {
+        print_error(get_string("auth_gauth_invalid_domain", "auth_gauth") . $data['email']);
+    }
 }
 
 auth_gauth_err('data: '.var_export($data, true));
