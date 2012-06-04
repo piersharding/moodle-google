@@ -65,3 +65,5 @@ $string['auth_gauth_username_error'] = 'Google returned a set of data that does 
 $string['pluginauthfailedusername'] = 'The Google OpenId authentication plugin failed - user {$a} disallowed due to invalid username format';
 $string['pluginauthfailed'] = 'The Google OpenId authentication plugin failed - user {$a} disallowed (no user auto creation?) or dual login disabled';
 $string['notconfigured'] = 'auth/gauth is not configured for use';
+$string['auth_gauth_invalid_host'] = 'Cannot determine host from $CFG->wwwroot - contact sys admin';
+

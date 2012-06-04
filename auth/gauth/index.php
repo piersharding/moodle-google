@@ -60,8 +60,18 @@ if (isset($_GET['wantsurl'])) {
 
 // do the OpenId negotiation
 $data = false;
+$parts = parse_url($CFG->wwwroot);
+$host = null;
+if (!empty($parts['host'])) {
+    $host = $parts['host'];
+}
+else {
+    auth_gauth_err('Host is not set: '.$CFG->wwwroot);
+    print_error(get_string("auth_gauth_invalid_host", "auth_gauth"));
+    die();
+}
 try {
-    $openid = new LightOpenID($_SERVER['HTTP_HOST']);
+    $openid = new LightOpenID($host);
     if (!$openid->mode) {
         $openid->identity = 'https://www.google.com/accounts/o8/id';
         $openid->required = array(
