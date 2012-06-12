@@ -156,6 +156,8 @@ class LightOpenID
 
     protected function request_curl($url, $method='GET', $params=array(), $update_claimed_id)
     {
+        global $CFG;
+
         $params = http_build_query($params, '', '&');
         $curl = curl_init($url . ($method == 'GET' && $params ? '?' . $params : ''));
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
@@ -172,6 +174,36 @@ class LightOpenID
 
             if($this->cainfo) {
                 curl_setopt($curl, CURLOPT_CAINFO, $this->cainfo);
+            }
+        }
+
+        // copied in Moodle proxy handling
+        if (!empty($CFG->proxyhost)) {
+            // SOCKS supported in PHP5 only
+            if (!empty($CFG->proxytype) and ($CFG->proxytype == 'SOCKS5')) {
+                if (defined('CURLPROXY_SOCKS5')) {
+                    curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                } else {
+                    curl_close($curl);
+                    auth_gauth_err("SOCKS5 proxy is not supported in PHP4.");
+                    throw new ErrorException(999, "SOCKS5 proxy is not supported in PHP4.");
+                }
+            }
+
+            curl_setopt($curl, CURLOPT_HTTPPROXYTUNNEL, false);
+
+            if (empty($CFG->proxyport)) {
+                curl_setopt($curl, CURLOPT_PROXY, $CFG->proxyhost);
+            } else {
+                curl_setopt($curl, CURLOPT_PROXY, $CFG->proxyhost.':'.$CFG->proxyport);
+            }
+
+            if (!empty($CFG->proxyuser) and !empty($CFG->proxypassword)) {
+                curl_setopt($curl, CURLOPT_PROXYUSERPWD, $CFG->proxyuser.':'.$CFG->proxypassword);
+                if (defined('CURLOPT_PROXYAUTH')) {
+                    // any proxy authentication if PHP 5.1
+                    curl_setopt($curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC | CURLAUTH_NTLM);
+                }
             }
         }
 
@@ -358,7 +390,7 @@ class LightOpenID
         if (function_exists('curl_init')
             && (!in_array('https', stream_get_wrappers()) || !ini_get('safe_mode') && !ini_get('open_basedir'))
         ) {
-            auth_gauth_err('using CURL');
+            auth_gauth_err('using CURL: '.$url);
             return $this->request_curl($url, $method, $params, $update_claimed_id);
         }
         auth_gauth_err('using STREAMS: this is not likely to work properly for Google OpenId - you need to activate CURL');
