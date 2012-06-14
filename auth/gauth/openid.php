@@ -596,7 +596,9 @@ class LightOpenID
                 return $server;
             }
 
-            throw new ErrorException("No OpenID Server found at $url", 404);
+//             throw new ErrorException("No OpenID Server found at $url", 404);
+            auth_gauth_err('Now resorting to Google Apps specific URL lookup');
+            return $this->discover_google_apps($originalUrl);
         }
         throw new ErrorException('Endless redirection!', 500);
     }
