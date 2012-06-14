@@ -45,6 +45,9 @@ $configs[] = new admin_setting_configtext('domainname', get_string('domainname',
     if (!isset ($config->duallogin)) {
         $config->duallogin = '';
     }
+    if (!isset ($config->domainspecificlogin)) {
+        $config->domainspecificlogin = '';
+    }
 ?>
 <table cellspacing="0" cellpadding="5" border="0">
 <tr valign="top" class="required">
@@ -53,6 +56,13 @@ $configs[] = new admin_setting_configtext('domainname', get_string('domainname',
         <input name="domainname" type="text" size="30" value="<?php echo $config->domainname; ?>" />
     </td>
     <td><?php print_string("auth_gauth_domainname_description", "auth_gauth"); ?></td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string("auth_gauth_domainspecificlogin", "auth_gauth"); ?>:</td>
+    <td>
+        <input name="domainspecificlogin" type="checkbox" <?php if($config->domainspecificlogin) echo "CHECKED"; ?> />
+    </td>
+    <td><?php print_string("auth_gauth_domainspecificlogin_description", "auth_gauth"); ?></td>
 </tr>
 <tr valign="top" class="required">
     <td align="right"><?php print_string("auth_gauth_username", "auth_gauth"); ?>:</td>

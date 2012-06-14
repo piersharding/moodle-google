@@ -83,7 +83,11 @@ try {
           'contact/country/home',
           'pref/language',
         );
-        auth_gauth_err('handing off to Google');
+        // do gapps specific login page if info supplied
+        if (!empty($pluginconfig->domainspecificlogin)) {
+            $openid->discover_google_apps($pluginconfig->domainname);
+        }
+        auth_gauth_err('handing off to Google: '.$openid->authUrl());
         header('Location: ' . $openid->authUrl());
         die();
 	}

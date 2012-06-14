@@ -381,7 +381,7 @@ class LightOpenID
             $this->headers = $this->parse_header_array($http_response_header, $update_claimed_id);
         }
 
-        return file_get_contents($url, false, $context);
+        return $data;
     }
 
 
@@ -430,6 +430,31 @@ class LightOpenID
     }
 
     /**
+     * Performs Google Apps specific openid endpoint discovery.
+     * This uses data from host-meta file provided by Google.
+     *
+     * Falls back to {@link discover()}.
+     *
+     * @throws ErrorException
+     * @param string $url
+     * @return string OP Endpoint (i.e. OpenID provider address).
+     */
+    function discover_google_apps($url)
+    {
+        $domain_name = $url;
+        if (preg_match('#^https?://([^/]+)#', $url, $matches)) {
+            $domain_name = $matches[1];
+        }
+        auth_gauth_err("doing domain specific look up");
+        $response = $this->request('https://www.google.com/accounts/o8/.well-known/host-meta?hd=' . $domain_name);
+        auth_gauth_err("domain specific look up: ".var_export($response, true));
+        if (!preg_match('#Link: <(.*)>;#', $response, $matches)) {
+            throw new ErrorException('Link for "' . $domain_name . '" is not found in Google host-meta file.');
+        }
+        return $this->discover($matches[1]);
+    }
+
+    /**
      * Performs Yadis and HTML discovery. Normally not used.
      * @param $url Identity URL.
      * @return String OP Endpoint (i.e. OpenID provider address).
@@ -450,6 +475,7 @@ class LightOpenID
 
         # A flag to disable yadis discovery in case of failure in headers.
         $yadis = true;
+        auth_gauth_err("doing the discovery");
 
         # We'll jump a maximum of 5 times, to avoid endless redirections.
         for ($i = 0; $i < 5; $i ++) {
@@ -760,7 +786,9 @@ class LightOpenID
             return false;
         }
 
+        auth_gauth_err('checking against claim ID: '.var_export($this->claimed_id, true));
         $server = $this->discover($this->claimed_id);
+        auth_gauth_err('server is: '.var_export($server, true));
 
         foreach (explode(',', $this->data['openid_signed']) as $item) {
             # Checking whether magic_quotes_gpc is turned on, because

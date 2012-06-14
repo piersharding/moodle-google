@@ -27,6 +27,7 @@ Install instructions:
 
 Multiple Domains:
 If you want to allow multiple domains access in, then set domainname to a comma delimited list of the valid domains.
+This will not work with the Enable GAPPS domain specific login option.
 
 Country attribute:
 is the 2 letter ISO country code, ie NZ for New Zealand.  The default constant value is taken from

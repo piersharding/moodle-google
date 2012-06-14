@@ -217,14 +217,18 @@ class auth_plugin_gauth extends auth_plugin_base {
         if (!isset ($config->domainname)) {
             $config->domainname = '';
         }
+        if (!isset ($config->domainspecificlogin)) {
+            $config->domainspecificlogin = '';
+        }
 
         // save settings
-        set_config('username',        $config->username,        'auth/gauth');
-        set_config('userfield',       $config->userfield,       'auth/gauth');
-        set_config('casesensitive',   $config->casesensitive,   'auth/gauth');
-        set_config('createusers',     $config->createusers,     'auth/gauth');
-        set_config('duallogin',       $config->duallogin,       'auth/gauth');
-        set_config('domainname',      $config->domainname,       'auth/gauth');
+        set_config('username',            $config->username,            'auth/gauth');
+        set_config('userfield',           $config->userfield,           'auth/gauth');
+        set_config('casesensitive',       $config->casesensitive,       'auth/gauth');
+        set_config('createusers',         $config->createusers,         'auth/gauth');
+        set_config('duallogin',           $config->duallogin,           'auth/gauth');
+        set_config('domainname',          $config->domainname,          'auth/gauth');
+        set_config('domainspecificlogin', $config->domainspecificlogin, 'auth/gauth');
 
         return true;
     }

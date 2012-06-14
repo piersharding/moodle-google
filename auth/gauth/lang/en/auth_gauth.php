@@ -44,6 +44,9 @@ $string['auth_gauth_createusers_description'] = 'Check to have the module log au
 $string['auth_gauth_casesensitive'] = 'Username is Case Sensitive';
 $string['auth_gauth_casesensitive_description'] = 'When doing the lookup to match an OpenId user to a Moodle user, do a case sensitive search - usually this should be On';
 
+$string['auth_gauth_domainspecificlogin'] = 'Enable GAPPS domain specific login';
+$string['auth_gauth_domainspecificlogin_description'] = 'Enable GAPPS domain specific login page if this is configured for your domain.  This means that you have to have delegated http://ompka.net/openid?id=<id> to Google to server - this will not work for most gapps domains as most people dont configure this up.';
+
 $string['auth_gauth_duallogin'] = 'Enable Dual login for users';
 $string['auth_gauth_duallogin_description'] = 'Enable user to login using their assigned login auth module and Google OpenId SSO';
 
