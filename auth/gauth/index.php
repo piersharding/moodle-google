@@ -237,6 +237,7 @@ auth_gauth_err('auth_gauth: jump to: '.$urltogo);
 
 // flag this as a gauth based login
 $SESSION->GAUTHSessionControlled = true;
+add_to_log(SITEID, 'user', 'login', "view.php?id=$USER->id&course=".SITEID, $USER->id, 0, $USER->id);
 redirect($urltogo);
 
 
