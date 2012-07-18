@@ -20,4 +20,7 @@ grade/export/fusion - Google Fusion tables export from grade book
 
 local/oauth - generic OAuth authentication module required for Fusion Tables integration
 
-repository/googlelinks - OAuth based repository plugin for Google Apps - provides URLs and Files
+repository/googlelinks - OAuth based repository plugin for Google Apps - provides URLs and Files !!!! this has been retired as the standard Google Docs plugin has been updated
+
+** NEW **
+repository/googledrive - OAuth based repository plugin for Google Drive - provides URLs and Files
