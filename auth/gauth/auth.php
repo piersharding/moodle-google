@@ -185,13 +185,6 @@ class auth_plugin_gauth extends auth_plugin_base {
     }
 
     /**
-     * A chance to validate form data, and last chance to
-     * do stuff before it is inserted in config_plugin
-     */
-     function validate_form(&$form, &$err) {
-     }
-
-    /**
     * Processes and stores configuration data for this authentication plugin.
     *
     *
