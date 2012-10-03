@@ -50,12 +50,12 @@ class google_drive extends google_docs {
      * @return mixed Array of files formated for fileapoi
      */
     public function get_file_list($search = '') {
-        global $OUTPUT;
+        global $OUTPUT, $SESSION;
 
+        $SESSION->googledrive = array();
         $search = clean_param($search, PARAM_ALPHANUMEXT);
         $content = $this->mygoogleoauth->get(self::DRIVE_LIST_URL);
         $doc = json_decode($content);
-        error_log('content: '.var_export($doc, true));
         $files = array();
         if (!empty($doc->items)) {
             foreach ($doc->items as $gdoc) {
@@ -64,10 +64,12 @@ class google_drive extends google_docs {
                     continue;
                 }
                 $owner = (!empty($gdoc->ownerNames) ? implode(', ', $gdoc->ownerNames) : '');
-                $source = (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink));
+                $source = (!empty($gdoc->webContentLink) ? $gdoc->webContentLink : (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink)));
+                $download = (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink));
                 $url = (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : '');
                 $size = (!empty($gdoc->fileSize) ? $gdoc->fileSize : (!empty($gdoc->quotaBytesUsed) ?  $gdoc->quotaBytesUsed : 'Unknown')).' Bytes';
                 $thumb = (!empty($gdoc->thumbnailLink) ? $gdoc->thumbnailLink : (string) $OUTPUT->pix_url(file_extension_icon($title, 32)));
+                $SESSION->googledrive[$source] = $download;
                 $files[] =  array( 'title' => $title,
                                 'url' => $url,
                                 'source' => $source,
@@ -148,8 +150,10 @@ class repository_googledrive extends repository {
     }
 
     public function get_file($url, $file = '') {
+        global $SESSION;
+
         $gdocs = new google_drive($this->googleoauth);
-        error_log('get file: '.$file. ' - '.$url);
+        $url = $SESSION->googledrive[$url];
         $path = $this->prepare_file($file);
         return $gdocs->download_file($url, $path);
     }
