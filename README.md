@@ -16,11 +16,7 @@ blocks/gmail - GMail unread messages block
 
 blocks/gaccess - Block of links to Google Apps services for your domain.
 
-grade/export/fusion - Google Fusion tables export from grade book
-
-local/oauth - generic OAuth authentication module required for Fusion Tables integration
-
-repository/googlelinks - OAuth based repository plugin for Google Apps - provides URLs and Files !!!! this has been retired as the standard Google Docs plugin has been updated
+grade/export/fusion - Google Fusion tables export from grade book - has been rewritten to use the internal Moodle OAuth libs
 
 ** NEW **
 repository/googledrive - OAuth based repository plugin for Google Drive - provides URLs and Files

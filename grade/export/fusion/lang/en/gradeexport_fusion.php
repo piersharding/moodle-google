@@ -29,3 +29,6 @@ $string['fusion:publish'] = 'Publish Fusion Table grade export';
 $string['fusion:view'] = 'Use Fusion table grade export';
 $string['popup'] = 'Fusion Tables popup';
 $string['noscript'] = 'Please enable JavaScript for this page to work';
+$string['login'] = 'Login to Google Fusion tables first';
+$string['tablename'] = 'Tablename';
+$string['noconfig'] = 'Google API configuration not present for grade/export/fusion.  Please contact the Administrator.';

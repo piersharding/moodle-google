@@ -18,7 +18,7 @@
 require_once '../../../config.php';
 require_once $CFG->dirroot.'/grade/export/lib.php';
 require_once 'grade_export_fusion.php';
-require_once '../../../local/oauth/fusionlib.php';
+require_once $CFG->dirroot.'/grade/export/fusion/fusionlib.php';
 
 $id                = required_param('id', PARAM_INT); // course id
 $groupid           = optional_param('groupid', 0, PARAM_INT);
@@ -34,6 +34,9 @@ if (!$course = $DB->get_record('course', array('id'=>$id))) {
     print_error('nocourseid');
 }
 
+$PAGE->set_url('/grade/export/fusion/index.php', array('id'=>$id));
+$PAGE->set_pagelayout('incourse');
+
 require_login($course);
 $context = get_context_instance(CONTEXT_COURSE, $id);
 
@@ -46,37 +49,53 @@ if (groups_get_course_groupmode($COURSE) == SEPARATEGROUPS and !has_capability('
     }
 }
 
-// check OAuth
-$oauth = new local_oauth_fusion();
 // parameters to preserve
 $preserve = array(
-                   'id' => $id,
-                   'groupid' => $groupid,
-                   'itemids' => $itemids,
-                   'export_feedback' => $export_feedback,
-                   'separator' => $separator,
-                   'updatedgradesonly' => $updatedgradesonly,
-                   'displaytype' => $displaytype,
-                   'decimalpoints' => $decimalpoints,
-                   'tablename' => $tablename,
-            );
-try {
-    if (!$oauth->authenticate($preserve)) {
-        print_grade_page_head($COURSE->id, 'export', 'fusion', get_string('exportto', 'grades') . ' ' . get_string('modulename', 'gradeexport_fusion'));
-        print_error(get_string('authfailed', 'local_oauth'));
-    }
-    $oauth->show_tables();
+                'id' => $id,
+                'groupid' => $groupid,
+                'itemids' => $itemids,
+                'export_feedback' => $export_feedback,
+                'separator' => $separator,
+                'updatedgradesonly' => $updatedgradesonly,
+                'displaytype' => $displaytype,
+                'decimalpoints' => $decimalpoints,
+                'tablename' => $tablename,
+);
+
+// check OAuth
+//$oauth = new fusion_grade_export_fusion();
+$returnurl = new moodle_url('/grade/export/fusion/export.php');
+foreach ($preserve as $k => $v) {
+    $returnurl->param($k, $v);
 }
-catch (local_oauth_exception $e) {
-    // clean it down
-    $oauth->wipe_auth();
-    // try again
-    $oauth = new local_oauth_fusion();
-    if (!$oauth->authenticate($preserve)) {
-        print_grade_page_head($COURSE->id, 'export', 'fusion', get_string('exportto', 'grades') . ' ' . get_string('modulename', 'gradeexport_fusion'));
-        print_error(get_string('authfailed', 'local_oauth'));
-    }
+$returnurl->param('sesskey', sesskey());
+
+// check the config
+$clientid = false;
+$secret = false;
+if (!empty($CFG->fusion_clientid)) {
+    $clientid = $CFG->fusion_clientid;
+    $secret = $CFG->fusion_secret;
 }
+// fallback to the googledrive config
+else {
+    $clientid = get_config('googledrive', 'clientid');
+    $secret = get_config('googledrive', 'secret');
+}
+
+if (empty($clientid) || empty($secret)) {
+    print_error('noconfig', 'gradeexport_fusion');
+}
+
+$fusion_realm = 'https://www.googleapis.com/auth/fusiontables';
+$googleoauth = new google_oauth($clientid, $secret, $returnurl, $fusion_realm);
+if (!$googleoauth->is_logged_in()) {
+    $url = $googleoauth->get_login_url();
+    redirect($url, get_string('login', 'gradeexport_fusion'), 2);
+//     echo '<a target="_blank" href="'.$url->out(false).'">'.get_string('login', 'repository').'</a>';
+}
+$oauth = new fusion_grade_export_oauth_fusion($googleoauth);
+$oauth->show_tables();
 
 // print all the exported data here
 $export = new grade_export_fusion($course, $groupid, $itemids, $export_feedback, $updatedgradesonly, $displaytype, $decimalpoints, $separator, $tablename);

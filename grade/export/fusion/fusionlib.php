@@ -16,44 +16,67 @@
 
 /**
  * OAuth library
- * @package   localoauth
+ * @package   grade/export/fusion
  * @copyright 2010 Moodle Pty Ltd (http://moodle.com)
  * @author    Piers Harding
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot.'/local/oauth/lib.php');
+require_once($CFG->libdir.'/googleapi.php');
 
-class local_oauth_fusion_exception extends moodle_exception { };
 
-class local_oauth_fusion extends local_oauth {
+
+/**
+ * OAuth 2.0 client for Google Services
+ *
+ * @package   core
+ * @copyright 2012 Dan Poltawski
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class google_fusion_oauth extends google_oauth {
+}
+
+
+class fusion_grade_export_oauth_fusion_exception extends moodle_exception { };
+
+class fusion_grade_export_oauth_fusion {
 
     private $scope = 'https://www.googleapis.com/auth/fusiontables';
     private $api = 'https://www.google.com/fusiontables/api/query';
-    private $site_name = 'google.com';
+    private $googleapi = false;
 
-    public function __construct() {
-        parent::__construct($this->site_name);
+    public function __construct($googleapi) {
+        $this->googleapi = $googleapi;
     }
 
 
-    /**
-     * clean down the auth storage
-     * @return nothing
-     */
-    public function wipe_auth() {
-        parent::wipe_auth($this->site_name);
+    public function getCSV($url, $parameters = array()) {
+
+        $response = $this->googleapi->get($url, $parameters);
+        if (empty($response)) {
+            return null;
+        }
+        $lines = array();
+        foreach (explode("\n", $response) as $row) {
+            if ($row) {
+                $lines[]=  str_getcsv($row, ',', '');
+            }
+        }
+        return $lines;
     }
 
+    public function getCSVTable($url, $parameters = array()) {
 
-    /**
-     * Add a site into the site directory
-     * @param array $oauth_params parameters to pass with token request
-     * @return bool success/fail
-     */
-    public function authenticate( $preserve = null) {
-        //return parent::authenticate(array('scope' => $this->scope, 'hd' => 'default'), $preserve);
-        return parent::authenticate(array('scope' => $this->scope), $preserve);
+        $data = $this->getCSV($url, $parameters);
+        if (empty($data)) {
+            return null;
+        }
+        $header = array_shift($data);
+        $table = array();
+        foreach ($data as $row) {
+            $table[]= array_combine($header, $row);
+        }
+        return $table;
     }
 
     /**
@@ -115,11 +138,8 @@ class local_oauth_fusion extends local_oauth {
             $columns[]= "$name: $type";
         }
         $table_def = "CREATE TABLE '".$tablename."' (".implode(", ", $columns).")";
-        $response = $this->postRequest($this->api, array('sql' => $table_def));
-        if ($response->status != 200) {
-            throw new local_oauth_exception($response->message . ' - ' . $table_def);
-        }
-        return  $response->body;
+        $response = $this->googleapi->post($this->api, array('sql' => $table_def));
+        return  $response;
     }
 
 
@@ -150,12 +170,8 @@ class local_oauth_fusion extends local_oauth {
             return null;
         }
         $sql = " ".implode("; ", $lines)."; ";
-        $response = $this->postRequest($this->api, array('sql' => $sql));
-
-        if ($response->status != 200) {
-            throw new local_oauth_exception($response->message.' - '.$sql);
-        }
-        return  $response->body;
+        $response = $this->googleapi->post($this->api, array('sql' => $sql));
+        return  $response;
     }
 
 }

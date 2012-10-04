@@ -145,7 +145,7 @@ class grade_export_fusion extends grade_export {
                 <?php echo get_string('noscript', 'gradeexport_fusion'); ?>
             </noscript>
         <?php
-        print_footer('none');
+        echo $OUTPUT->footer();
         exit;
     }
 
@@ -182,7 +182,7 @@ class grade_export_fusion extends grade_export {
         }
         echo $OUTPUT->container_end();
 
-        echo $OUTPUT->heading(get_string('tablename', 'local_oauth').': '.$this->tablename);
+        echo $OUTPUT->heading(get_string('tablename', 'gradeexport_fusion').': '.$this->tablename);
     }
 
 }
