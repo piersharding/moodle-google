@@ -71,17 +71,8 @@ foreach ($preserve as $k => $v) {
 $returnurl->param('sesskey', sesskey());
 
 // check the config
-$clientid = false;
-$secret = false;
-if (!empty($CFG->fusion_clientid)) {
-    $clientid = $CFG->fusion_clientid;
-    $secret = $CFG->fusion_secret;
-}
-// fallback to the googledrive config
-else {
-    $clientid = get_config('googledrive', 'clientid');
-    $secret = get_config('googledrive', 'secret');
-}
+$clientid = get_config('gradeexport_fusion', 'clientid');
+$secret = get_config('gradeexport_fusion', 'secret');
 
 if (empty($clientid) || empty($secret)) {
     print_error('noconfig', 'gradeexport_fusion');

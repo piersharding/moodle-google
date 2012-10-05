@@ -32,3 +32,8 @@ $string['noscript'] = 'Please enable JavaScript for this page to work';
 $string['login'] = 'Login to Google Fusion tables first';
 $string['tablename'] = 'Tablename';
 $string['noconfig'] = 'Google API configuration not present for grade/export/fusion.  Please contact the Administrator.';
+$string['oauthinfo'] = '<p>To use this plugin, you must register your site with Google, as described in the documentation <a href="{$a->docsurl}">Google OAuth 2.0 setup</a>.</p><p>As part of the registration process, you will need to enter the following URL as \'Authorized Redirect URIs\':</p><p>{$a->callbackurl}</p>Once registered, you will be provided with a client ID and secret which can be used to configure all Fusion Tables, Google Docs, Google Drive, and Picasa plugins.</p>';
+$string['clientid'] = 'Client ID';
+$string['clientiddesc'] = 'The Client ID specified in your configured Google API web service';
+$string['secret'] = 'Secret';
+$string['secretdesc'] = 'The Secret specified in your configured Google API web service';

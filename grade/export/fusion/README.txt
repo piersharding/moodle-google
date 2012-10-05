@@ -13,16 +13,11 @@ Notes:
 Install instructions:
   1. unpack this archive into the / directory as you would for any Moodle
      auth module (http://docs.moodle.org/en/Installing_contributed_modules_or_plugins).
-  2. There are two ways to configure the Google OAuth API requirements for
-  grade/export/fusion:
-     * if you implement repository/googledrive and complete the configuration,
-       then fusion tables export will default to use the same config - ensure
-       that the API configuration allows the Fusion Tables access
-     * alternatively you can set the config values in <moodle rootdir>/config.php eg:
-     $CFG->fusion_clientid = 'xxxxxx.apps.googleusercontent.com';
-     $CFG->fusion_secret   = 'XXXXXXXXXXXXXXXXXXXXXXXX';
-     if you want to setup a separate Client ID for web application.
-       
+  2. To configure grade/export/fusion you need to navigate to Site Administration -> Grades -> Export Settings -> Fusion Table Export
+    or 
+       <your moodle root>/admin/settings.php?section=gradeexportfusion
+       Follow the instructions about setting up the Google API  - ensure
+       that the Google API configuration allows the Fusion Tables access
 
 generic help on OAuth for Moodle is available here:
 http://docs.moodle.org/23/en/Google_OAuth_2.0_setup
