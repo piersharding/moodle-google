@@ -59,25 +59,55 @@ class google_drive extends google_docs {
         $files = array();
         if (!empty($doc->items)) {
             foreach ($doc->items as $gdoc) {
+                if (isset($gdoc->explicitlyTrashed) && $gdoc->explicitlyTrashed) {
+                    continue;
+                }
                 $title = (!empty($gdoc->originalFilename) ? $gdoc->originalFilename : $gdoc->title);
                 if (!empty($search) && !preg_match('/'.$search.'/i', $title)) {
                     continue;
                 }
+//                 error_log('TITLE: '.$title);
                 $owner = (!empty($gdoc->ownerNames) ? implode(', ', $gdoc->ownerNames) : '');
                 $source = (!empty($gdoc->webContentLink) ? $gdoc->webContentLink : (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink)));
-                $download = (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink));
+                $download = null;
+                if ($gdoc->mimeType == 'application/vnd.google-apps.drawing') {
+                    $download = $source;
+                }
+                else if ($gdoc->mimeType == 'application/vnd.google-apps.spreadsheet') {
+                    if (isset($gdoc->exportLinks)) {
+                        $links = (array) $gdoc->exportLinks;
+//                         error_log('spreadsheet: '.var_export($links, true));
+                        $download = $links['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+                        $title .= '.xlsx';
+                    }
+                }
+                else if ($gdoc->mimeType == 'application/vnd.google-apps.fusiontable') {
+//                     error_log('fusion: '.var_export($gdoc, true));
+                    $download = $gdoc->alternateLink;
+//                     $title .= '.csv';
+                }
+                else {
+                    $download = (!empty($gdoc->selfUrl) ? $gdoc->selfUrl : (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : $gdoc->alternateLink));
+                }
                 $url = (!empty($gdoc->downloadUrl) ?  $gdoc->downloadUrl : '');
                 $size = (!empty($gdoc->fileSize) ? $gdoc->fileSize : (!empty($gdoc->quotaBytesUsed) ?  $gdoc->quotaBytesUsed : 'Unknown')).' Bytes';
                 $thumb = (!empty($gdoc->thumbnailLink) ? $gdoc->thumbnailLink : (string) $OUTPUT->pix_url(file_extension_icon($title, 32)));
-                $SESSION->googledrive[$source] = $download;
-                $files[] =  array( 'title' => $title,
+                $file = array( 'title' => $title,
                                 'url' => $url,
                                 'source' => $source,
                                 'date'   => usertime(strtotime($gdoc->modifiedDate)),
                                 'thumbnail' => $thumb,
                                 'author' => $owner,
                                 'size' => $size,
+                                'mimetype' => $gdoc->mimeType,
+                                'webContentLink' => (isset($gdoc->webContentLink) ? $gdoc->webContentLink : ''),
+                                'selfUrl' => (isset($gdoc->selfUrl) ? $gdoc->selfUrl : ''),
+                                'downloadUrl' => (isset($gdoc->downloadUrl) ? $gdoc->downloadUrl : ''),
+                                'alternateLink' => $gdoc->alternateLink,
+                                'download' => $download,
                                 );
+                $SESSION->googledrive[$source] = $file;
+                $files[] = $file;
             }
         }
         return $files;
@@ -153,7 +183,8 @@ class repository_googledrive extends repository {
         global $SESSION;
 
         $gdocs = new google_drive($this->googleoauth);
-        $url = $SESSION->googledrive[$url];
+//         error_log('download file: '.var_export($SESSION->googledrive[$url], true));
+        $url = $SESSION->googledrive[$url]['download'];
         $path = $this->prepare_file($file);
         return $gdocs->download_file($url, $path);
     }
