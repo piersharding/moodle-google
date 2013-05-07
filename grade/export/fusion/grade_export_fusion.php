@@ -126,9 +126,8 @@ class grade_export_fusion extends grade_export {
 
         $table = $oauth->table_by_name($this->tablename, true);
         $table_id = $table['table id'];
-//         redirect('https://www.google.com/fusiontables/DataSource?dsrcid='.$table_id);
         // output a basic page and do the popup and redirect
-        $table_url = 'https://www.google.com/fusiontables/DataSource?dsrcid='.$table_id;
+        $table_url = 'https://www.google.com/fusiontables/DataSource?docid='.$table_id;
         $course_url = $CFG->wwwroot.'/course/view.php?id='.$this->course->id;
         print_grade_page_head($this->course->id, 'export', 'fusion', get_string('exportto', 'grades') . ' ' . get_string('modulename', 'gradeexport_fusion'));
         echo $OUTPUT->heading(get_string('popup', 'gradeexport_fusion'));
