@@ -23,9 +23,9 @@
  */
 
 $string['clientid'] = 'Client ID';
-$string['configplugin'] = 'Configure Google Drive plugin';
-$string['googledrive:view'] = 'View google Drive repository';
+$string['configplugin'] = 'Configure Google Drive (with links) plugin';
+$string['googledrive:view'] = 'View Google Drive (with links) repository';
 $string['oauthinfo'] = '<p>To use this plugin, you must register your site with Google, as described in the documentation <a href="{$a->docsurl}">Google OAuth 2.0 setup</a>.</p><p>As part of the registration process, you will need to enter the following URL as \'Authorized Redirect URIs\':</p><p>{$a->callbackurl}</p>Once registered, you will be provided with a client ID and secret which can be used to configure all Google Docs, Google Drive, and Picasa plugins.</p>';
-$string['pluginname'] = 'Google Drive';
+$string['pluginname'] = 'Google Drive with Links';
 $string['secret'] = 'Secret';
 
