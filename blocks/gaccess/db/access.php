@@ -15,29 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Resource module capability definition
- *
+/*
  * @author     Alastair Munro <alastair.munro@totaralms.com>
- * @author     Piers Harding
  * @package    block
  * @subpackage gmail
- * @copyright  2011 Piers Harding
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2013 TotaraLMS
+ * @license    http://opensource.org/licenses/gpl-3.0.html     GNU Public License
  */
 
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
-    'block/gmail:viewlist' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-        )
-    ),
-
-    'block/gmail:addinstance' => array(
+    'block/gaccess:addinstance' => array(
 
         'riskbitmask' => RISK_SPAM | RISK_XSS,
 
@@ -52,3 +41,4 @@ $capabilities = array(
     ),
 );
 
+?>
