@@ -117,7 +117,7 @@ class block_gmail extends block_list {
         // This lib breaks install if left at top level only include
         // when we know we need it
         if ($USER->id !== 0) {
-            require_once($CFG->dirroot.'/lib/simplepie/simplepie.class.php');
+            require_once dirname(__FILE__).'/simplepie/simplepie.php';
         }
 
         // Test for domain settings
