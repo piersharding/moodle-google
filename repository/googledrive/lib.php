@@ -29,7 +29,9 @@ require_once($CFG->libdir.'/googleapi.php');
 
 class google_drive extends google_docs {
 
-    const REALM = 'https://www.googleapis.com/auth/drive.readonly.metadata https://www.googleapis.com/auth/drive.file https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com/.';
+    // the Drive realm appears to be broken at the moment - must set a broader one
+    // const REALM = 'https://www.googleapis.com/auth/drive.readonly.metadata https://www.googleapis.com/auth/drive.file https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com/.';
+    const REALM = 'https://www.googleapis.com/auth/drive.readonly.metadata https://www.googleapis.com/auth/drive https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com/.';
     const DRIVE_FILE_URL = 'https://www.googleapis.com/drive/v2/files';
     private $mygoogleoauth = null;
 
@@ -117,7 +119,7 @@ class google_drive extends google_docs {
                         'selfUrl' => (isset($gdoc->selfUrl) ? $gdoc->selfUrl : ''),
                         'downloadUrl' => (isset($gdoc->downloadUrl) ? $gdoc->downloadUrl : ''),
                         'alternateLink' => $gdoc->alternateLink,
-                        'download' => $download,
+                        'download' => $url,
                         );
         return $file;
     }
