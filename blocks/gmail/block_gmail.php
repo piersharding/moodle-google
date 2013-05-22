@@ -135,7 +135,8 @@ class block_gmail extends block_list {
 
         $feederror = false;
         // Obtain gmail feed data
-        if(!$feeddata = $this->obtain_gmail_feed()) {
+        $feeddata = $this->obtain_gmail_feed();
+        if(empty($feeddata)) {
             $feederror = true;
         } else {
             // Parse google atom feed
