@@ -117,7 +117,7 @@ class block_gmail extends block_list {
         // This lib breaks install if left at top level only include
         // when we know we need it
         if ($USER->id !== 0) {
-            require_once dirname(__FILE__).'/simplepie/simplepie.php';
+            require_once($CFG->libdir .'/simplepie/moodle_simplepie.php');
         }
 
         // Test for domain settings
@@ -139,7 +139,7 @@ class block_gmail extends block_list {
             $feederror = true;
         } else {
             // Parse google atom feed
-            $feed = new SimplePie();
+            $feed = new moodle_simplepie();
             $feed->set_raw_data($feeddata);
             $status = $feed->init();
             $msgs = $feed->get_items();
