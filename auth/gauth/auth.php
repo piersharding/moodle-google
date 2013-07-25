@@ -232,7 +232,7 @@ class auth_plugin_gauth extends auth_plugin_base {
     * @param string $string Possibly multi-valued attribute from Identity Provider
     */
     function get_first_string($string) {
-        $list = split( ';', $string);
+        $list = explode( ';', $string);
         $clean_string = trim($list[0]);
 
         return $clean_string;
