@@ -194,7 +194,7 @@ class block_gmail extends block_list {
                     $servicelink = str_replace('http://mail.google.com/mail','http://mail.google.com/a/'.$this->domain,$servicelink);
 
                     // To Save Space given them option to show first and last or just last name
-                    $authornames = split(" ",$author->get_name());
+                    $authornames = explode(" ",$author->get_name());
                     $author_first = array_shift($authornames);
                     $author_last = array_shift($authornames);
                     // Show first Name
@@ -241,7 +241,7 @@ class block_gmail extends block_list {
             require_once('OAuth.php');
         }
         $consumer  = new OAuthConsumer($this->domain, $this->oauthsecret, NULL);
-        $parts = split('@', $USER->{$this->userfield});
+        $parts = explode('@', $USER->{$this->userfield});
         $user = array_shift($parts);
         $user      = "$user@$this->domain";
         $feed      = 'https://mail.google.com/mail/feed/atom';
