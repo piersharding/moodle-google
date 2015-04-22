@@ -112,18 +112,27 @@ class block_gaccess extends block_list {
         if (get_config('blocks/gaccess','start')) {
             $google_services []=
                 array(
-                        'service'   => 'Start Page',
-                        'relayurl'  => 'http://partnerpage.google.com/'.$domain,
-                        'icon_name' => 'startpage'
+                        'service'   => 'Google+',
+                        'relayurl'  => 'http://plus.google.com',
+                        'icon_name' => 'gplus'
                 );
         }
 
         if (get_config('blocks/gaccess','docs')) {
             $google_services []=
                 array(
-                        'service'   => 'Docs',
-                        'relayurl'  => 'http://docs.google.com/a/'.$domain,
-                        'icon_name' => 'gdocs'
+                        'service'   => 'Google Drive',
+                        'relayurl'  => 'http://drive.google.com/a/'.$domain,
+                        'icon_name' => 'drive'
+                );
+        }
+
+        if (get_config('blocks/gaccess','classroom')) {
+            $google_services []=
+                array(
+                        'service' => 'Classroom',
+                        'relayurl' => 'http://classroom.google.com',
+                        'icon_name' => 'classroom'
                 );
         }
 
