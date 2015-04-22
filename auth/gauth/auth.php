@@ -192,6 +192,12 @@ class auth_plugin_gauth extends auth_plugin_base {
     */
     function process_config($config) {
         // set to defaults if undefined
+        if (!isset ($config->clientid)) {
+            $config->clientid = '';
+        }
+        if (!isset ($config->secret)) {
+            $config->secret = '';
+        }
         if (!isset ($config->username)) {
             $config->username = 'mail';
         }
@@ -215,6 +221,8 @@ class auth_plugin_gauth extends auth_plugin_base {
         }
 
         // save settings
+        set_config('clientid',            $config->clientid,            'auth/gauth');
+        set_config('secret',              $config->secret,              'auth/gauth');
         set_config('username',            $config->username,            'auth/gauth');
         set_config('userfield',           $config->userfield,           'auth/gauth');
         set_config('casesensitive',       $config->casesensitive,       'auth/gauth');

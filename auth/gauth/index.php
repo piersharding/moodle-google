@@ -48,9 +48,9 @@ if (!isset($pluginconfig->userfield) || empty($pluginconfig->userfield)) {
 }
 unset($SESSION->GAUTHSessionControlled);
 
-// pull in LightOpenID
-require_once('openid.php');
-
+// pull in OpenIDConnectClient
+set_include_path(get_include_path().":./lib");
+require_once('lib/OpenIDConnectClient.php5');
 
 // save the jump target - this is checked later that it
 // starts with $CFG->wwwroot, and cleaned
@@ -71,41 +71,56 @@ else {
     die();
 }
 try {
-    $openid = new LightOpenID($host);
-    if (!$openid->mode) {
-        $openid->identity = 'https://www.google.com/accounts/o8/id';
-        $openid->required = array(
-          'namePerson',
-          'namePerson/first',
-          'namePerson/last',
-          'namePerson/friendly',
-          'contact/email',
-          'contact/country/home',
-          'pref/language',
-        );
-        // do gapps specific login page if info supplied
-        if (!empty($pluginconfig->domainspecificlogin)) {
-            $openid->discover('https://www.google.com/accounts/o8/site-xrds?hd='.$pluginconfig->domainname);
-        }
-        auth_gauth_err('handing off to Google: '.$openid->authUrl());
-        header('Location: ' . $openid->authUrl());
-        die();
-	}
-	elseif($openid->mode == 'cancel') {
-	    auth_gauth_err('Cancelled');
-	    print_error(get_string("auth_gauth_user_cancel", "auth_gauth"));
-	    die();
-	}
-	elseif($openid->validate()) {
-	    auth_gauth_err('Validated');
-		$data = $openid->getAttributes();
-		$data['openid'] = $openid->identity;
-	}
-	else {
-	    auth_gauth_err('validation failed');
-	    print_error(get_string("auth_gauth_user_not_loggedin", "auth_gauth"));
-	    die();
-	}
+    $oidc = new OpenIDConnectClient('accounts.google.com',
+                                    $pluginconfig->clientid,
+                                    $pluginconfig->secret);
+    $oidc->addScope(array("openid", "email", "profile"));
+    $oidc->authenticate();
+    // Only the guaranteed ones
+    $data = array('firstname' => $oidc->requestUserInfo('given_name'),
+                   'lastname' => $oidc->requestUserInfo('family_name'),
+                   'name' => $oidc->requestUserInfo('name'),
+                   'email' => $oidc->requestUserInfo('email'),
+                   'openid' => $oidc->requestUserInfo('sub'),
+                   // 'zoneinfo' => $oidc->requestUserInfo('zoneinfo')
+                   );
+    auth_gauth_err('auth/gauth: user: '.var_export($data, true));
+
+ //    $openid = new LightOpenID($host);
+ //    if (!$openid->mode) {
+ //        $openid->identity = 'https://www.google.com/accounts/o8/id';
+ //        $openid->required = array(
+ //          'namePerson',
+ //          'namePerson/first',
+ //          'namePerson/last',
+ //          'namePerson/friendly',
+ //          'contact/email',
+ //          'contact/country/home',
+ //          'pref/language',
+ //        );
+ //        // do gapps specific login page if info supplied
+ //        if (!empty($pluginconfig->domainspecificlogin)) {
+ //            $openid->discover('https://www.google.com/accounts/o8/site-xrds?hd='.$pluginconfig->domainname);
+ //        }
+ //        auth_gauth_err('handing off to Google: '.$openid->authUrl());
+ //        header('Location: ' . $openid->authUrl());
+ //        die();
+	// }
+	// elseif($openid->mode == 'cancel') {
+	//     auth_gauth_err('Cancelled');
+	//     print_error(get_string("auth_gauth_user_cancel", "auth_gauth"));
+	//     die();
+	// }
+	// elseif($openid->validate()) {
+	//     auth_gauth_err('Validated');
+	// 	$data = $openid->getAttributes();
+	// 	$data['openid'] = $openid->identity;
+	// }
+	// else {
+	//     auth_gauth_err('validation failed');
+	//     print_error(get_string("auth_gauth_user_not_loggedin", "auth_gauth"));
+	//     die();
+	// }
 }
 catch(ErrorException $e) {
     // major failure
@@ -125,19 +140,6 @@ if (empty($wantsurl) && isset($SESSION->wantsurl)) {
     $wantsurl = $SESSION->wantsurl;
 }
 unset($SESSION->wantsurl);
-
-// Valid session. Register or update user in Moodle, log him on, and redirect to Moodle front
-// realign Google data
-$data['firstname'] = $data['namePerson/first'];
-$data['lastname']  = $data['namePerson/last'];
-$data['email']     = $data['contact/email'];
-$data['lang']      = (isset ($data['pref/language']) ? strtoupper(array_shift(explode('-', $data['pref/language']))) : '');
-if (isset($data['contact/country/home'])) {
-    $data['country'] = $data['contact/country/home'];
-}
-else {
-    $data['country']   = (isset ($data['pref/language']) ? strtoupper(array_pop(explode('-', $data['pref/language']))) : '');
-}
 
 if (empty($data['firstname']) || empty($data['lastname']) || empty($data['email'])) {
     print_error(get_string("auth_gauth_openid_key_empty", "auth_gauth"));
@@ -237,7 +239,6 @@ auth_gauth_err('auth_gauth: jump to: '.$urltogo);
 
 // flag this as a gauth based login
 $SESSION->GAUTHSessionControlled = true;
-add_to_log(SITEID, 'user', 'login', "view.php?id=$USER->id&course=".SITEID, $USER->id, 0, $USER->id);
 redirect($urltogo);
 
 
@@ -322,6 +323,7 @@ function auth_gauth_authenticate_user_login($username, $password) {
 
             // we don't want to upset the existing authentication schema for the user
             if ($authplugin->is_synchronised_with_external()) { // update user record from external DB
+                auth_gauth_err('User record is going to be updated');
                 $user = update_user_record($username);
             }
         } else {

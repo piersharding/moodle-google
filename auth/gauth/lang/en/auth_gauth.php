@@ -38,6 +38,12 @@ $string['pluginname']         = 'Google OpenId Authentication';
 $string['auth_gauthtitle']         = 'Google OpenId Authentication';
 $string['auth_gauthdescription']   = 'SSO Authentication using Google OpenId';
 
+$string['auth_gauth_clientid'] = 'Google API ClientId';
+$string['auth_gauth_clientid_description'] = 'Get your Web Application API ClientId from the Developer Console - https://console.developers.google.com';
+
+$string['auth_gauth_secret'] = 'Google API Secret';
+$string['auth_gauth_secret_description'] = 'Get your Web Application API Secret from the Developer Console - https://console.developers.google.com';
+
 $string['auth_gauth_createusers'] = 'Automatically create users';
 $string['auth_gauth_createusers_description'] = 'Check to have the module log automatically create users accounts if none exists';
 

@@ -27,6 +27,12 @@
 $configs[] = new admin_setting_configtext('domainname', get_string('domainname','auth_gauth'), "", '', PARAM_RAW, 50);
 
     // Set to defaults if undefined
+    if (!isset ($config->clientid)) {
+        $config->clientid = '';
+    }
+    if (!isset ($config->secret)) {
+        $config->secret = '';
+    }
     if (!isset ($config->domainname)) {
         $config->domainname = '<google apps domain>';
     }
@@ -50,6 +56,20 @@ $configs[] = new admin_setting_configtext('domainname', get_string('domainname',
     }
 ?>
 <table cellspacing="0" cellpadding="5" border="0">
+<tr valign="top" class="required">
+    <td align="right"><?php print_string("auth_gauth_clientid", "auth_gauth"); ?>:</td>
+    <td>
+        <input name="clientid" type="text" size="30" value="<?php echo $config->clientid; ?>" />
+    </td>
+    <td><?php print_string("auth_gauth_clientid_description", "auth_gauth"); ?></td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right"><?php print_string("auth_gauth_secret", "auth_gauth"); ?>:</td>
+    <td>
+        <input name="secret" type="password" size="30" value="<?php echo $config->secret; ?>" />
+    </td>
+    <td><?php print_string("auth_gauth_secret_description", "auth_gauth"); ?></td>
+</tr>
 <tr valign="top" class="required">
     <td align="right"><?php print_string("auth_gauth_domainname", "auth_gauth"); ?>:</td>
     <td>
