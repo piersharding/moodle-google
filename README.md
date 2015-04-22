@@ -10,7 +10,7 @@ Google integration work, added to, and updated for Moodle 2.x.
 
 The plugins consist of:
 
-auth/gauth - Google OpenId Authentication plugin
+auth/gauth - Google OpenId Connect (**now supported**) Authentication plugin
 
 blocks/gmail - GMail unread messages block
 
