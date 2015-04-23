@@ -3,12 +3,13 @@ Google OpenId Authentication for Moodle
 license: http://www.gnu.org/copyleft/gpl.html GNU Public License
 
 Changes:
+- 2015-04    : Updated to use Google Apps OpenId Connect
 - 2011-10    : Created by Piers Harding
 
 Requirements:
 - None
 
-Notes: 
+Notes:
 
 Install instructions:
   1. unpack this archive into the / directory as you would for any Moodle
@@ -17,8 +18,9 @@ Install instructions:
      Administration -> Plugins -> Authentication -> Manage authentication and clicking on the enable icon.
   3. Configure the settings for the plugin - pay special attention to the
      mapping of the Moodle and Google username attribute.
+     Create your ClienId/Secrete for a Web Application at https://console.developers.google.com
 - 4. If you only want auth/gauth as login option, change login page to point to auth/gauth/index.php
-- 5. If you want to use another authentication method together with auth/gauth, 
+- 5. If you want to use another authentication method together with auth/gauth,
     in parallel, change the 'Instructions' in the 'Common settings' of the
     'Administrations >> Users >> Authentication Options' to contain a link to the
     auth/gauth login page (-- remember to check the href and src paths --):
@@ -29,9 +31,8 @@ Multiple Domains:
 If you want to allow multiple domains access in, then set domainname to a comma delimited list of the valid domains.
 This will not work with the Enable GAPPS domain specific login option.
 
-Country attribute:
-is the 2 letter ISO country code, ie NZ for New Zealand.  The default constant value is taken from
-the field mappings if the mapping offered is not an available attribute, and 'contact/country/home' is not present.
+Country and Language attributes:
+is nolonger supported by OpenId Connect
 
 Problems:
 
