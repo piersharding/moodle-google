@@ -122,10 +122,16 @@ try {
 	//     die();
 	// }
 }
-catch(ErrorException $e) {
+catch(OpenIDConnectClientException $e) {
     // major failure
     auth_gauth_err('auth/gauth: failure: '.$e->getMessage());
-	print_error(get_string("auth_gauth_openid_failure", "auth_gauth", $e->getMessage()));
+    print_error(get_string("auth_gauth_openid_failure", "auth_gauth", $e->getMessage()));
+    die();
+}
+catch(Exception $e) {
+    // major failure
+    auth_gauth_err('auth/gauth: failure: '.$e->getMessage());
+	print_error(get_string("auth_gauth_openid_exception", "auth_gauth", $e->getMessage()));
 	die();
 }
 

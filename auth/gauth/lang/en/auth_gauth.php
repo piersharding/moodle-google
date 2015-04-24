@@ -68,6 +68,7 @@ $string['auth_gauth_field_instructions'] = 'Here you can map further field value
 $string['auth_gauth_user_cancel'] = 'The user has cancelled the login at Google';
 $string['auth_gauth_user_not_loggedin'] = 'User not logged in';
 $string['auth_gauth_openid_failure'] = 'OpenId negotiation with Google failed';
+$string['auth_gauth_openid_exception'] = 'OpenId Client general failure - check configuration: ';
 $string['auth_gauth_openid_empty'] = 'Google returned no data';
 $string['auth_gauth_openid_key_empty'] = 'Key fields of firstname, lastname, or email returned empty from Google';
 $string['auth_gauth_username_error'] = 'Google returned a set of data that does not contain the OpenId username mapping field. This field is required to login';
