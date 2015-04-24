@@ -465,6 +465,9 @@ class OpenIDConnectClient
      */
     private function verifyJWTclaims($claims) {
 
+        auth_gauth_err("provider: ".$this->getProviderURL()." / ".$claims->iss);
+        auth_gauth_err("clientID: ".$this->clientID." / ".var_export($claims->aud, true));
+        auth_gauth_err("nonce: ".$_SESSION['openid_connect_nonce']." / ".$claims->nonce);
         return (($claims->iss == $this->getProviderURL())
             && (($claims->aud == $this->clientID) || (in_array($this->clientID, $claims->aud)))
             && ($claims->nonce == $_SESSION['openid_connect_nonce']));

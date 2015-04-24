@@ -71,7 +71,7 @@ else {
     die();
 }
 try {
-    $oidc = new OpenIDConnectClient('accounts.google.com',
+    $oidc = new OpenIDConnectClient('https://accounts.google.com',
                                     $pluginconfig->clientid,
                                     $pluginconfig->secret);
     $oidc->addScope(array("openid", "email", "profile"));
