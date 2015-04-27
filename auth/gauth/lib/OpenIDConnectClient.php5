@@ -129,6 +129,11 @@ class OpenIDConnectClient
     private $accessToken;
 
     /**
+     * @var string if we aquire a refresh token it will be stored here
+     */
+    private $refreshToken;
+
+    /**
      * @var array holds scopes
      */
     private $scopes = array();
@@ -213,6 +218,9 @@ class OpenIDConnectClient
 
                 // Save the access token
                 $this->accessToken = $token_json->access_token;
+                
+                // Save the refresh token, if we got one
+                if (isset($token_json->refresh_token)) $this->refreshToken = $token_json->refresh_token;
 
                 // Success!
                 return true;
@@ -269,8 +277,8 @@ class OpenIDConnectClient
 
         return $this->providerConfig[$param];
     }
-
-
+    
+    
     /**
      * @param $url Sets redirect URL for auth flow
      */
@@ -286,7 +294,7 @@ class OpenIDConnectClient
      * @return string
      */
     public function getRedirectURL() {
-
+        
         // If the redirect URL has been set then return it.
         if (property_exists($this, 'redirectURL') && $this->redirectURL) {
             return $this->redirectURL;
@@ -343,7 +351,8 @@ class OpenIDConnectClient
             'redirect_uri' => $this->getRedirectURL(),
             'client_id' => $this->clientID,
             'nonce' => $nonce,
-            'state' => $state
+            'state' => $state,
+            'scope' => 'openid'
         ));
 
         // If the client has been registered with additional scopes
@@ -385,6 +394,22 @@ class OpenIDConnectClient
         return json_decode($this->fetchURL($token_endpoint, $token_params));
 
     }
+
+    /**
+      * @param array $keys
+      * @param array $header
+      * @throws OpenIDConnectClientException
+      * @return object
+      */
+     private function get_key_for_header($keys, $header) {
+         foreach ($keys as $key) {
+             if ($key->alg == $header->alg && $key->kid == $header->kid) {
+                 return $key;
+             }
+         }
+         throw new OpenIDConnectClientException('Unable to find a key for (algorithm, kid):' . $header->alg . ', ' . $header->kid . ')');
+     }
+ 
 
     /**
      * @param array $keys
@@ -450,7 +475,7 @@ class OpenIDConnectClient
         case 'RS512':
             $hashtype = 'sha' . substr($header->alg, 2);
             $verified = $this->verifyRSAJWTsignature($hashtype,
-                                                     $this->get_key_for_alg($jwks->keys, 'RSA'),
+                                                     $this->get_key_for_header($jwks->keys, $header),
                                                      $payload, $signature);
             break;
         default:
@@ -746,6 +771,20 @@ class OpenIDConnectClient
      */
     public function canVerifySignatures() {
       return class_exists('Crypt_RSA');
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessToken() {
+        return $this->accessToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefreshToken() {
+        return $this->refreshToken;
     }
 
 
