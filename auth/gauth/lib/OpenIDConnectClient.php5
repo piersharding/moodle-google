@@ -218,7 +218,7 @@ class OpenIDConnectClient
 
                 // Save the access token
                 $this->accessToken = $token_json->access_token;
-                
+
                 // Save the refresh token, if we got one
                 if (isset($token_json->refresh_token)) $this->refreshToken = $token_json->refresh_token;
 
@@ -277,8 +277,8 @@ class OpenIDConnectClient
 
         return $this->providerConfig[$param];
     }
-    
-    
+
+
     /**
      * @param $url Sets redirect URL for auth flow
      */
@@ -294,7 +294,7 @@ class OpenIDConnectClient
      * @return string
      */
     public function getRedirectURL() {
-        
+
         // If the redirect URL has been set then return it.
         if (property_exists($this, 'redirectURL') && $this->redirectURL) {
             return $this->redirectURL;
@@ -409,7 +409,7 @@ class OpenIDConnectClient
          }
          throw new OpenIDConnectClientException('Unable to find a key for (algorithm, kid):' . $header->alg . ', ' . $header->kid . ')');
      }
- 
+
 
     /**
      * @param array $keys
@@ -477,8 +477,10 @@ class OpenIDConnectClient
             $verified = $this->verifyRSAJWTsignature($hashtype,
                                                      $this->get_key_for_header($jwks->keys, $header),
                                                      $payload, $signature);
+            auth_gauth_err("verifyJWTsignature signature: ".$verified);
             break;
         default:
+            auth_gauth_err("verifyJWTsignature signature: failed - unsupported signature type");
             throw new OpenIDConnectClientException('No support for signature type: ' . $header->alg);
         }
         return $verified;
@@ -489,7 +491,6 @@ class OpenIDConnectClient
      * @return bool
      */
     private function verifyJWTclaims($claims) {
-
         auth_gauth_err("verifyJWTclaims provider: ".$this->getProviderURL()." / ".$claims->iss);
         auth_gauth_err("verifyJWTclaims clientID: ".$this->clientID." / ".var_export($claims->aud, true));
         auth_gauth_err("verifyJWTclaims nonce: ".$_SESSION['openid_connect_nonce']." / ".$claims->nonce);
