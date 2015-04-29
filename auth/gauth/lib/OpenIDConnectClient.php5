@@ -474,13 +474,17 @@ class OpenIDConnectClient
         case 'RS384':
         case 'RS512':
             $hashtype = 'sha' . substr($header->alg, 2);
-            $verified = $this->verifyRSAJWTsignature($hashtype,
-                                                     $this->get_key_for_header($jwks->keys, $header),
+            if (isset($header->kid)) {
+                $key = $this->get_key_for_header($jwks->keys, $header);
+            } else {
+                $key = $this->get_key_for_alg($jwks->keys, 'RSA');
+            }
+            $verified = $this->verifyRSAJWTsignature($hashtype, $key,
                                                      $payload, $signature);
             auth_gauth_err("verifyJWTsignature signature: ".$verified);
             break;
         default:
-            auth_gauth_err("verifyJWTsignature signature: failed - unsupported signature type");
+            auth_gauth_err("verifyJWTsignature signature: failed - unsupported signature type: " . $header->alg);
             throw new OpenIDConnectClientException('No support for signature type: ' . $header->alg);
         }
         return $verified;
