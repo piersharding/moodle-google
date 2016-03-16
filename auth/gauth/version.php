@@ -16,3 +16,4 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $plugin->version = 2009080102;
+$plugin->component = 'auth_gauth';
