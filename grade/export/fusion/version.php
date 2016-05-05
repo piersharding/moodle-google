@@ -17,5 +17,6 @@
 
 $plugin->version  = 2007092700;
 $plugin->requires = 2010000000;
+$plugin->component = 'gradeexport_fusion';
 
 
